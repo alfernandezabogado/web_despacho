@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ángel Luis Fernández Sanz | Abogado y Mediador en Cáceres</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .hero-gradient {
+            background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8)), 
+                        url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover; background-position: center;
+        }
+        .modal-active { overflow: hidden; }
+        .modal-img-container { background-size: cover; background-position: center; }
+        .img-card:hover { transform: translateY(-5px); transition: all 0.3s; }
+    </style>
+</head>
+<body class="text-slate-900 antialiased">
+
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
+            <span class="text-lg md:text-xl font-bold tracking-tighter uppercase">Ángel Luis Fernández Sanz</span>
+            <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
+        <div class="flex flex-col">
+            <span class="text-sm md:text-xl font-bold tracking-tighter uppercase leading-none">Ángel Luis Fernández Sanz</span>
+            <span class="text-[10px] md:hidden text-amber-600 font-bold"><i class="fas fa-phone-alt mr-1"></i>651 81 94 94</span>
+        </div>
+
+        <div class="flex items-center space-x-4 md:space-x-8">
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#inicio" class="text-sm font-semibold hover:text-blue-600 transition">Inicio</a>
+                <a href="#servicios" class="text-sm font-semibold hover:text-blue-600 transition">Especialidades</a>
+                <span class="text-sm md:text-base font-bold text-slate-700">
+                    <i class="fas fa-phone-alt text-amber-600 mr-2"></i>+34 651 81 94 94
+                </span>
+            </div>
+            <a href="#contacto" class="bg-slate-900 text-white px-4 md:px-6 py-2 rounded-sm text-xs md:text-sm font-semibold hover:bg-blue-700 transition">Contacto</a>
+        </div>
+    </div>
+</nav>
+                <a href="#inicio" class="text-sm font-semibold hover:text-blue-600 transition">Inicio</a>
+                <a href="#servicios" class="text-sm font-semibold hover:text-blue-600 transition">Especialidades</a>
+                <a href="#contacto" class="bg-slate-900 text-white px-6 py-2 rounded-sm text-sm font-semibold hover:bg-blue-700 transition">Contacto</a>
+                <span class="text-lg md:text-xl font-bold tracking-tighter uppercase"><i class="fas fa-phone-alt text-amber-600 mr-2"></i> +34 651819494</span>
+            </div>
+        </div>
+    </nav>
+
+    <section id="inicio" class="hero-gradient min-h-screen flex items-center pt-20">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-12 text-white">
+            <div class="md:w-3/5 text-center md:text-left">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">Excelencia Jurídica y Mediación Profesional.</h1>
+                <p class="text-xl text-slate-300 mb-10">Compromiso y rigor técnico en Cáceres.</p>
+                <p class="text-xl text-slate-300 mb-10">34 años de Experiencia.</p>
+                <a href="#contacto" class="bg-blue-600 text-white px-8 py-4 font-semibold hover:bg-blue-700 transition inline-block shadow-lg">Solicitar Cita</a>
+            </div>
+            <div class="md:w-2/5">
+                <img src="fototoga.jpg" class="rounded-lg shadow-2xl border-4 border-white/10 img-card" onerror="this.src='https://via.placeholder.com/400x500?text=Ángel+Luis'">
+            </div>
+        </div>
+    </section>
+
+    <section id="servicios" class="py-24 bg-white text-center">
+        <h2 class="text-3xl font-bold mb-16 italic underline decoration-blue-600 underline-offset-8">Especialidades Jurídicas</h2>
+        <div id="grid-servicios" class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            </div>
+    </section>
+
+    <div id="modal-global" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/95 backdrop-blur-md p-4 transition-all opacity-0">
+        <div class="bg-white w-full max-w-5xl rounded-lg overflow-hidden shadow-2xl relative transform scale-95 transition-all max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 text-2xl z-50">×</button>
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                <div id="modal-img" class="h-48 lg:h-auto modal-img-container"></div>
+                
+                <div class="p-8 lg:p-12">
+                    <h3 id="modal-title" class="text-3xl font-bold mb-4 text-slate-900 border-b-2 border-blue-600 inline-block pb-2"></h3>
+                    <p id="modal-desc" class="text-slate-600 mb-6 text-sm italic"></p>
+                    <ul id="modal-list" class="space-y-2 text-slate-700 mb-8 text-sm"></ul>
+                    
+                    <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                        <h4 class="font-bold mb-4 text-blue-600 uppercase text-xs tracking-widest">Consulta Directa</h4>
+                        <form id="modalForm" onsubmit="enviarFormulario(event, 'modalForm')" class="space-y-4">
+                            <input type="hidden" name="especialidad" id="modal-especialidad-val">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="text" name="nombre" placeholder="Nombre completo" required class="p-3 border rounded w-full text-sm outline-none focus:ring-2 focus:ring-blue-600">
+                                <input type="email" name="email" placeholder="Correo electrónico" required class="p-3 border rounded w-full text-sm outline-none focus:ring-2 focus:ring-blue-600">
+                            </div>
+                            <textarea name="mensaje" rows="3" placeholder="Describa brevemente su caso..." required class="p-3 border rounded w-full text-sm outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700 transition uppercase text-xs tracking-widest shadow-md">
+                                Enviar Consulta
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- El Despacho -->
+    <section id="nosotros" class="py-24 bg-slate-900 text-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold mb-16 italic text-white">El Despacho</h2>
+            
+            <div class="space-y-12">
+                <!-- Imagen del despacho ocupando ancho de página con su rótulo -->
+                <div class="flex flex-col items-center">
+                    <div class="w-full overflow-hidden rounded-lg shadow-2xl border border-white/10">
+                        <img src="despacho_principal.jpg" alt="Entrada del Despacho" class="w-full h-auto object-cover" onerror="this.parentElement.innerHTML='<div class=\'bg-slate-800 p-20 text-slate-500 italic\'>[Imagen del Despacho - Asegúrese de que despacho_principal.jpg esté en la misma carpeta]</div>'">
+                    </div>
+                    <div class="mt-8">
+                        <p class="text-2xl md:text-3xl text-blue-400 font-bold tracking-tight uppercase">
+                            Avda. Virgen de Guadalupe 35 A Planta 4 Local 1
+                        </p>
+                        <p class="text-slate-400 mt-2 text-lg">CÁCERES</p>
+                    </div>
+                </div>
+
+                <!-- Galería de tres imágenes en línea -->
+                <div class="pt-12 border-t border-white/10">
+                    <p class="text-xl text-slate-300 font-medium italic mb-8">Imágenes del despacho</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="overflow-hidden rounded-lg shadow-xl border border-white/5">
+                            <img src="galeria_1.jpg" alt="Vista Despacho 1" class="w-full h-64 object-cover img-card" onerror="this.src='https://via.placeholder.com/600x400?text=Imagen+1'">
+                        </div>
+                        <div class="overflow-hidden rounded-lg shadow-xl border border-white/5">
+                            <img src="galeria_2.jpg" alt="Vista Despacho 2" class="w-full h-64 object-cover img-card" onerror="this.src='https://via.placeholder.com/600x400?text=Imagen+2'">
+                        </div>
+                        <div class="overflow-hidden rounded-lg shadow-xl border border-white/5">
+                            <img src="galeria_3.jpg" alt="Vista Despacho 3" class="w-full h-64 object-cover img-card" onerror="this.src='https://via.placeholder.com/600x400?text=Imagen+3'">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen de servicios adicionales -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/10 flex flex-col items-center">
+                        <!-- Imagen para Privacidad Garantizada -->
+                        <div class="w-full overflow-hidden rounded-lg shadow-lg border border-white/5 mb-4">
+                            <img src="privacidad.jpg" alt="Privacidad Garantizada" class="w-full h-48 object-cover img-card" onerror="this.src='https://via.placeholder.com/600x400?text=Privacidad+Garantizada'">
+                        </div>
+                        <i class="fa-solid fa-user-shield text-blue-500 text-2xl mb-2"></i>
+                        <p class="text-slate-300 font-medium">Privacidad garantizada</p>
+                    </div>
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/10 flex flex-col items-center">
+                        <!-- Imagen para Sala de Mediación -->
+                        <div class="w-full overflow-hidden rounded-lg shadow-lg border border-white/5 mb-4">
+                            <img src="sala_mediacion.jpg" alt="Sala de Mediación" class="w-full h-48 object-cover img-card" onerror="this.src='https://via.placeholder.com/600x400?text=Sala+de+Mediación'">
+                        </div>
+                        <i class="fa-solid fa-comments text-blue-500 text-2xl mb-2"></i>
+                        <p class="text-slate-300 font-medium">Sala de mediación propia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   
+    <section id="contacto" class="py-24 bg-slate-50">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-12 italic">Contactar con el Despacho</h2>
+            <form id="mainForm" onsubmit="enviarFormulario(event, 'mainForm')" class="bg-white p-8 shadow-xl border border-slate-200 text-left space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="text" name="nombre" placeholder="Nombre completo" required class="p-4 border w-full bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none">
+                    <input type="email" name="email" placeholder="Correo electrónico" required class="p-4 border w-full bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <select name="especialidad" class="p-4 border w-full bg-slate-50 outline-none">
+                    <option>Derecho Civil</option>
+                    <option>Derecho Penal</option>
+                    <option>Derecho Mercantil</option>
+                    <option>Extranjería</option>
+                    <option>Mediación</option>
+                </select>
+                <textarea name="mensaje" rows="4" placeholder="Su consulta..." required class="p-4 border w-full bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none"></textarea>
+                <button type="submit" class="w-full bg-slate-900 text-white font-bold py-5 hover:bg-blue-600 transition uppercase tracking-widest text-sm shadow-xl">
+                    Enviar Solicitud
+                </button>
+            </form>
+        </div>
+    </section>
+    <footer class="bg-slate-900 text-white py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center border-b border-slate-800 pb-8">
+            <div class="text-center md:text-left mb-6 md:mb-0">
+                <h3 class="text-xl font-bold font-serif text-amber-500">ÁNGEL LUIS FERNÁNDEZ SANZ</h3>
+                <p class="text-slate-400 text-sm">Abogado y Mediador en Cáceres</p>
+            </div>
+            <div class="flex gap-6 text-sm">
+                <a href="javascript:void(0)" onclick="abrirLegal('aviso')"
+                class="hover:text-amber-500">Aviso Legal</a>
+                <a href="javascript:void(0)" onclick="abrirLegal('privacidad')"
+                class="hover:text-amber-500">Privacidad</a>
+                <a href="javascript:void(0)" onclick="abrirLegal('cookies')"
+                class="hover:text-amber-500">Cookies</a>
+            </div>
+        </div>
+        <div class="mt-8 text-center text-slate-500 text-xs">
+            <p>&copy; 2026 Ángel Luis Fernández Sanz. Todos los derechos reservados.</p>
+            <p class="mt-2 text-[10px] uppercase tracking-widest">Cumplimiento RGPD / LOPD-GDD</p>
+        </div>
+    </div>
+</footer>
+<div id="modal-legal" class="fixed inset-0 bg-black/50 hidden z-[200000] p-4 flex items-center justify-center">
+    <div class="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto p-8 relative">
+        <button onclick="cerrarLegal()" class="absolute top-4 right-4 text-2xl">&times;</button>
+        <div id="contenido-legal" class="prose prose-slate text-sm">
+            </div>
+    </div>
+</div>
+    <script>
+        // CONFIGURACIÓN TÉCNICA DE SERVICIOS
+        const servicios = {
+            civil: { 
+                t: "Derecho Civil", i: "fa-scale-balanced", img: "derecho civil.jpg", 
+                d: "Familia, sucesiones y contratos patrimoniales.",
+                p: ["Filiación y Capacidad", "Divorcios y Convenios", "Derechos Reales", "Obligaciones y Contratos", "Sucesiones"] 
+            },
+            penal: { 
+                t: "Derecho Penal", i: "fa-gavel", img: "derecho_penal.jpg", 
+                d: "Defensa penal técnica y acusación integral.",
+                p: ["Violencia de Género", "Asistencia al detenido", "Delitos Económicos", "Defensa en Juicios", "Recursos"] 
+            },
+            mercantil: { 
+                t: "Derecho Mercantil", i: "fa-briefcase", img: "derecho_mercantil1.jpg", 
+                d: "Asesoría jurídica a empresas y autónomos.",
+                p: ["Constitución de Sociedades", "Contratos Mercantiles", "Concursos de Acreedores", "Propiedad Industrial"] 
+            },
+            extranjeria: { 
+                t: "Extranjería", i: "fa-passport", img: "extranjeria.jpg", 
+                d: "Permisos, nacionalidad y recursos legales.",
+                p: ["Arraigos", "Nacionalidad Española", "Reagrupación Familiar", "Visados"] 
+            },
+            mediacion: { 
+                t: "Mediación", i: "fa-handshake", img: "mediacion.jpg", 
+                d: "Resolución extrajudicial de conflictos.",
+                p: ["Mediación Familiar", "Conflictos Civiles", "Acuerdos Extrajudiciales", "Gestión de Crisis"] 
+            }
+        };
+
+        // Renderizado del Grid
+        const grid = document.getElementById('grid-servicios');
+        Object.keys(servicios).forEach(k => {
+            const s = servicios[k];
+            grid.innerHTML += `
+                <div onclick="openModal('${k}')" class="p-6 bg-slate-50 border border-slate-100 rounded hover:shadow-xl transition-all cursor-pointer group hover:-translate-y-1">
+                    <i class="fa-solid ${s.i} text-blue-600 text-3xl mb-4 group-hover:scale-110 transition"></i>
+                    <h3 class="font-bold text-lg mb-2">${s.t}</h3>
+                    <p class="text-slate-600 text-[10px] mb-4">${s.d}</p>
+                    <span class="text-[10px] text-blue-500 font-semibold uppercase opacity-60 group-hover:opacity-100 transition">Ver cuestionario +</span>
+                </div>`;
+        });
+
+        // Funciones del Modal
+        function openModal(k) {
+            const s = servicios[k];
+            document.getElementById('modal-title').innerText = s.t;
+            document.getElementById('modal-desc').innerText = s.d;
+            document.getElementById('modal-img').style.backgroundImage = `url('${s.img}')`;
+            document.getElementById('modal-especialidad-val').value = s.t;
+            document.getElementById('modal-list').innerHTML = s.p.map(x => `<li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-600 text-[10px]"></i>${x}</li>`).join('');
+            
+            const m = document.getElementById('modal-global');
+            m.classList.remove('hidden');
+            setTimeout(() => { m.classList.add('opacity-100'); m.firstElementChild.classList.remove('scale-95'); }, 10);
+            document.body.classList.add('modal-active');
+        }
+
+        function closeModal() {
+            const m = document.getElementById('modal-global');
+            m.classList.remove('opacity-100');
+            m.firstElementChild.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); document.body.classList.remove('modal-active'); }, 300);
+        }
+
+        // --- LÓGICA DE ENVÍO INTEGRADA ---
+        async function enviarFormulario(e, formId) {
+            e.preventDefault();
+            const form = document.getElementById(formId);
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            
+            // URL de tu Script de Google
+            const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzuF_gkCQ2F25FGzC13CTLqH5G855_lV6DWk72N4oOjQAZHiy9i-S52Xf751RW-csLc8g/exec"; 
+
+            btn.innerText = "ENVIANDO...";
+            btn.disabled = true;
+
+            const formData = new FormData(form);
+            const data = new URLSearchParams(formData);
+
+            try {
+                await fetch(URL_SCRIPT, {
+                    method: 'POST',
+                    body: data,
+                    mode: 'no-cors'
+                });
+                
+                alert("¡Consulta recibida! Ángel Luis Fernández Sanz le contactará a la brevedad.");
+                form.reset();
+                if(formId === 'modalForm') closeModal();
+            } catch (error) {
+                alert("Error de conexión. Por favor, inténtelo de nuevo.");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Cerrar al pulsar fuera del contenido
+        window.onclick = (e) => { if(e.target.id === 'modal-global') closeModal(); }
+    </script>
+    <a href="https://wa.me/34651819494?text=Hola,%20deseo%20solicitar%20una%20consulta%20con%20el%20letrado%20Ángel%20Luis%20Fernández." 
+   style="position:fixed; width:60px; height:60px; bottom:40px; right:40px; background-color:#25d366; color:#FFF; border-radius:50px; text-align:center; font-size:30px; box-shadow: 2px 2px 3px #999; z-index:1000;" 
+   target="_blank">
+    <i class="fab fa-whatsapp" style="margin-top:16px;"></i>
+</a>
+<div id="modal-legal" class="fixed inset-0 bg-black/60 hidden z-[200000] p-4 flex items-center justify-center">
+    <div class="bg-white text-slate-900 rounded-lg max-w-2xl w-full p-8 relative shadow-2xl border-t-4 border-amber-600">
+        <button onclick="cerrarLegal()" class="absolute top-4 right-4 text-3xl text-slate-400 hover:text-slate-900">&times;</button>
+        <div id="contenido-legal" class="leading-relaxed">
+            </div>
+        <div class="mt-6 text-right">
+            <button onclick="cerrarLegal()" class="bg-slate-900 text-white px-6 py-2 rounded font-bold">CERRAR</button>
+        </div>
+    </div>
+</div>
+<script>
+function abrirLegal(tipo) {
+    const modal = document.getElementById('modal-legal');
+    const contenido = document.getElementById('contenido-legal');
+    
+    const textos = {
+        'aviso': '<h2 class="text-xl font-bold mb-4">Aviso Legal</h2><p>Ángel Luis Fernández Sanz, con despacho en Cáceres, Avda. Virgen de Guadalupe. Colegiado nº 549 del ICAC. Correo: despachofernandezsanz@gmail.com. Este sitio web tiene carácter informativo sobre servicios jurídicos y mediación.</p>',
+        'privacidad': '<h2 class="text-xl font-bold mb-4">Política de Privacidad</h2><p>En cumplimiento del RGPD, le informamos que sus datos serán tratados por Ángel Luis Fernández Sanz con la única finalidad de gestionar su consulta profesional. No se cederán datos a terceros salvo obligación legal. Puede ejercer sus derechos de acceso y rectificación vía email.</p>',
+        'cookies': '<h2 class="text-xl font-bold mb-4">Política de Cookies</h2><p>Esta web solo utiliza cookies técnicas esenciales para permitir la navegación y seguridad del sitio. No se utilizan cookies de seguimiento ni publicitarias.</p>'
+    };
+
+    contenido.innerHTML = textos[tipo];
+    modal.classList.remove('hidden');
+}
+
+function cerrarLegal() {
+    document.getElementById('modal-legal').classList.add('hidden');
+}
+</script>
+<div id="cookie-banner" style="position:fixed; bottom:0; left:0; width:100%; background:#0f172a; color:white; padding:20px; z-index:200001; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); border-top: 3px solid #d97706;">
+    <div style="max-width:1200px; margin:0 auto; display:flex; flex-direction:column; md-flex-direction:row; justify-content:space-between; align-items:center; gap:15px;">
+        <p style="font-size:14px; margin:0; line-height:1.5; text-align:center;">
+            Utilizamos cookies propias para asegurar el funcionamiento de la web. Al continuar navegando, acepta nuestra 
+            <a href="javascript:void(0)" onclick="abrirLegal('cookies')" style="color:#f59e0b; text-decoration:underline;">política de cookies</a>.
+        </p>
+        <button onclick="aceptarCookies()" style="background:#d97706; color:white; border:none; padding:10px 25px; border-radius:5px; cursor:pointer; font-weight:bold; font-size:14px; transition:0.3s;">
+            ACEPTAR
+        </button>
+    </div>
+</div>
+
+<script>
+// Función para ocultar el banner y recordar la decisión
+function aceptarCookies() {
+    document.getElementById('cookie-banner').style.display = 'none';
+    localStorage.setItem('cookiesAceptadas', 'true');
+}
+
+// Lógica para que no aparezca si ya se aceptó antes
+window.onload = function() {
+    if(localStorage.getItem('cookiesAceptadas') === 'true') {
+        document.getElementById('cookie-banner').style.display = 'none';
+    }
+}
+</script>
+</body>
+</html>
