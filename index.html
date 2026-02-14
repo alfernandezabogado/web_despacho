@@ -685,6 +685,54 @@ window.onload = function() {
     #bocadillo-chat { margin-left: 20px; } /* Ajuste para que no se salga en móviles */
 }
 </style>
-</body>
+<script>
+// LÓGICA DE CONTROL DE NAVEGACIÓN (ESPECÍFICA PARA MÓVILES)
+(function() {
+    const esMovil = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+    if (esMovil) {
+        function manejarEstadoModal(abriendo) {
+            if (abriendo) {
+                history.pushState({ modalAbierto: true }, "");
+            }
+        }
+
+        window.onpopstate = function(event) {
+            const modalServicios = document.getElementById('modal-global');
+            const modalLegal = document.getElementById('modal-legal');
+
+            if (modalServicios && !modalServicios.classList.contains('hidden')) {
+                closeModal();
+            } else if (modalLegal && !modalLegal.classList.contains('hidden')) {
+                cerrarLegal();
+            }
+        };
+
+        window.addEventListener('beforeunload', function (e) {
+            const modalServicios = document.getElementById('modal-global');
+            const modalLegal = document.getElementById('modal-legal');
+            
+            // Si no hay nada abierto, pedimos confirmación al intentar salir
+            if (modalServicios.classList.contains('hidden') && modalLegal.classList.contains('hidden')) {
+                const mensaje = "¿Está seguro de que desea salir de la web del despacho?";
+                e.returnValue = mensaje;
+                return mensaje;
+            }
+        });
+
+        const originalOpenModal = window.openModal;
+        window.openModal = function(k) {
+            manejarEstadoModal(true);
+            originalOpenModal(k);
+        };
+
+        const originalAbrirLegal = window.abrirLegal;
+        window.abrirLegal = function(tipo) {
+            manejarEstadoModal(true);
+            originalAbrirLegal(tipo);
+        };
+    }
+})();
+</script>
+</body>
 </html>
