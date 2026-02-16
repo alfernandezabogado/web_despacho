@@ -679,19 +679,7 @@ window.onload = function() {
                 cerrarLegal();
             }
         };
-
-        window.addEventListener('beforeunload', function (e) {
-            const modalServicios = document.getElementById('modal-global');
-            const modalLegal = document.getElementById('modal-legal');
-            
-            // Si no hay nada abierto, pedimos confirmación al intentar salir
-            if (modalServicios.classList.contains('hidden') && modalLegal.classList.contains('hidden')) {
-                const mensaje = "¿Está seguro de que desea salir de la web del despacho?";
-                e.returnValue = mensaje;
-                return mensaje;
-            }
-        });
-
+        
         const originalOpenModal = window.openModal;
         window.openModal = function(k) {
             manejarEstadoModal(true);
@@ -719,7 +707,7 @@ window.onload = function() {
     "streetAddress": "Avda. Virgen de Guadalupe 35 A, Planta 4, Local 1",
     "addressLocality": "Cáceres",
     "addressRegion": "Extremadura",
-    "postalCode": "10000",
+    "postalCode": "10001",
     "addressCountry": "ES"
   },
   "geo": {
@@ -737,5 +725,6 @@ window.onload = function() {
 </script>
 </body>
 </html>
+
 
 
