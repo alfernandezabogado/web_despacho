@@ -410,62 +410,78 @@
 </footer>
 
 <script>
-        // CONFIGURACIÓN TÉCNICA DE SERVICIOS
+  // CONFIGURACIÓN TÉCNICA DE SERVICIOS
         const servicios = {
             civil: { 
-                t: "Derecho Civil", i: "fa-scale-balanced", img: "derecho civil.jpg", 
+                t: "Derecho Civil", i: "fa-scale-balanced", img: "derecho civil.jpg",
+                alt: "Especialista en Derecho Civil en Cáceres",
                 d: "Familia, sucesiones y contratos patrimoniales.",
                 p: ["Filiación y Capacidad", "Divorcios y Convenios", "Derechos Reales", "Obligaciones y Contratos", "Sucesiones", "Derecho Inmobiliario"] 
             },
             penal: { 
-                t: "Derecho Penal", i: "fa-gavel", img: "derecho_penal.jpg", 
+                t: "Derecho Penal", i: "fa-gavel", img: "derecho_penal.jpg",
+                alt: "Abogado penalista en Cáceres", 
                 d: "Defensa penal técnica y acusación integral.",
                 p: ["Violencia de Género", "Asistencia al detenido", "Defensa en Tribunales", "Delitos Económicos", "Recursos"] 
             },
             mercantil: { 
-                t: "Derecho Mercantil", i: "fa-briefcase", img: "derecho_mercantil1.jpg", 
+                t: "Derecho Mercantil", i: "fa-briefcase", img: "derecho_mercantil1.jpg",
+                alt: "Adaministrador Concursal en Cáceres", 
                 d: "Asesoría jurídica a empresas y autónomos.",
                 p: ["Constitución de Sociedades", "Contratos Mercantiles", "Administración Concursal", "Propiedad Intelectual"] 
             },
             extranjeria: { 
-                t: "Extranjería", i: "fa-passport", img: "extranjeria.jpg", 
+                t: "Extranjería", i: "fa-passport", img: "extranjeria.jpg",
+                alt: "Especialista en Extranjería en Cáceres", 
                 d: "Permisos, nacionalidad y recursos legales.",
                 p: ["Regularizaciones", "Arraigos", "Expulsiones", "Nacionalidad Española", "Reagrupación Familiar", "Visados"] 
             },
             mediacion: { 
-                t: "Mediación", i: "fa-handshake", img: "mediacion.jpg", 
+                t: "Mediación", i: "fa-handshake", img: "mediacion.jpg",
+                alt: "Experto en Mediación Civil y Mercantil en Cáceres", 
                 d: "Resolución extrajudicial de conflictos.",
                 p: ["Mediación Familiar", "Mediación Civil y Mercantil", "Acuerdos Extrajudiciales", "MASC", "Gestión de Crisis"] 
             }
         };
 
-        // Renderizado del Grid
-        const grid = document.getElementById('grid-servicios');
-        Object.keys(servicios).forEach(k => {
-            const s = servicios[k];
-            grid.innerHTML += `
-                <div onclick="openModal('${k}')" class="p-6 bg-slate-50 border border-slate-100 rounded hover:shadow-xl transition-all cursor-pointer group hover:-translate-y-1">
-                    <i class="fa-solid ${s.i} text-blue-600 text-3xl mb-4 group-hover:scale-110 transition"></i>
-                    <h3 class="font-bold text-lg mb-2">${s.t}</h3>
-                    <p class="text-slate-600 text-[10px] mb-4">${s.d}</p>
-                    <span class="text-[10px] text-blue-500 font-semibold uppercase opacity-60 group-hover:opacity-100 transition">Ver cuestionario +</span>
-                </div>`;
-        });
-
-        // Funciones del Modal
-        function openModal(k) {
-            const s = servicios[k];
-            document.getElementById('modal-title').innerText = s.t;
-            document.getElementById('modal-desc').innerText = s.d;
-            document.getElementById('modal-img').style.backgroundImage = `url('${s.img}')`;
-            document.getElementById('modal-especialidad-val').value = s.t;
-            document.getElementById('modal-list').innerHTML = s.p.map(x => `<li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-600 text-[10px]"></i>${x}</li>`).join('');
+        // Renderizado del Grid - ACTUALIZADO CON IMÁGENES Y SEO
+const grid = document.getElementById('grid-servicios');
+Object.keys(servicios).forEach(k => {
+    const s = servicios[k];
+    grid.innerHTML += `
+        <div onclick="openModal('${k}')" class="overflow-hidden bg-slate-50 border border-slate-100 rounded hover:shadow-xl transition-all cursor-pointer group hover:-translate-y-1">
+            <img src="${s.img}" alt="${s.alt}" class="w-full h-32 object-cover">
             
-            const m = document.getElementById('modal-global');
-            m.classList.remove('hidden');
-            setTimeout(() => { m.classList.add('opacity-100'); m.firstElementChild.classList.remove('scale-95'); }, 10);
-            document.body.classList.add('modal-active');
-        }
+            <div class="p-6">
+                <i class="fa-solid ${s.i} text-blue-600 text-3xl mb-4 group-hover:scale-110 transition"></i>
+                <h3 class="font-bold text-lg mb-2">${s.t}</h3>
+                <p class="text-slate-600 text-[10px] mb-4">${s.d}</p>
+                <span class="text-[10px] text-blue-500 font-semibold uppercase opacity-60 group-hover:opacity-100 transition">Ver cuestionario +</span>
+            </div>
+        </div>`;
+});
+
+        function openModal(k) {
+    const s = servicios[k];
+    document.getElementById('modal-title').innerText = s.t;
+    document.getElementById('modal-desc').innerText = s.d;
+    
+    // Optimizamos la imagen del modal para accesibilidad
+    const modalImg = document.getElementById('modal-img');
+    modalImg.style.backgroundImage = `url('${s.img}')`;
+    modalImg.setAttribute('aria-label', s.alt); // Google sabrá qué hay en la foto del modal
+    
+    document.getElementById('modal-especialidad-val').value = s.t;
+    document.getElementById('modal-list').innerHTML = s.p.map(x => `<li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-600 text-[10px]"></i>${x}</li>`).join('');
+    
+    const m = document.getElementById('modal-global');
+    m.classList.remove('hidden');
+    setTimeout(() => { 
+        m.classList.add('opacity-100'); 
+        m.firstElementChild.classList.remove('scale-95'); 
+    }, 10);
+    document.body.classList.add('modal-active');
+}
 
         function closeModal() {
             const m = document.getElementById('modal-global');
@@ -545,7 +561,7 @@
         </div>
     </div>
 </div>
-<script>
+<script>      
 
 // LÓGICA DE CONTROL DE NAVEGACIÓN (ESPECÍFICA PARA MÓVILES)
 (function() {
@@ -777,6 +793,7 @@
 </style>
 </body>
 </html>
+
 
 
 
