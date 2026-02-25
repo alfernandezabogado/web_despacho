@@ -613,37 +613,32 @@ function cerrarModal() {
 </div>
 <script>
 
-// LÓGICA DE CONTROL DE NAVEGACIÓN (ESPECÍFICA PARA MÓVILES)
-(function() {
-    const esMovil = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+function openModal(k) {
+    const s = servicios[k];
+    if (!s) return;
 
-    if (esMovil) {
-        function manejarEstadoModal(abriendo) {
-            if (abriendo) {
-                history.pushState({ modalAbierto: true }, "");
-            }
-        }
+    document.getElementById('modal-title').innerText = s.t;
+    document.getElementById('modal-desc').innerText = s.d;
+    
+    // Rellenamos datos...
+    document.getElementById('modal-especialidad-val').value = s.t;
+    document.getElementById('modal-list').innerHTML = s.p.map(x => `<li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-600 text-[10px]"></i>${x}</li>`).join('');
+    
+    const m = document.getElementById('modal-global');
+    m.classList.remove('hidden');
+    m.classList.add('flex'); // <-- ESTO ES VITAL PARA MÓVILES
+    
+    setTimeout(() => { 
+        m.classList.add('opacity-100'); 
+        m.firstElementChild.classList.remove('scale-95'); 
+    }, 10);
+    
+    document.body.style.overflow = 'hidden';
 
-        window.onpopstate = function(event) {
-            const modalServicios = document.getElementById('modal-global');
-            const modalLegal = document.getElementById('modal-legal');
-
-            if (modalServicios && !modalServicios.classList.contains('hidden')) {
-                closeModal();
-            } else if (modalLegal && !modalLegal.classList.contains('hidden')) {
-                cerrarLegal();
-            }
-        };
-
-        const originalOpenModal = window.openModal;
-        window.openModal = function(k) {
-            manejarEstadoModal(true);
-            originalOpenModal(k);
-        };
-
-    }
-})();
-</script>
+    // OCULTAR VÍDEO
+    const video = document.getElementById('contenedor-video-final');
+    if (video) video.style.display = 'none';
+}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -843,6 +838,7 @@ function cerrarModal() {
 </style>
 </body>
 </html>
+
 
 
 
