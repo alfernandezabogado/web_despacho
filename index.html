@@ -613,32 +613,60 @@ function cerrarModal() {
 </div>
 <script>
 
-function openModal(k) {
+// --- FUNCIONES DE ESPECIALIDADES Y MODAL ---
+
+// 1. Forzamos a que el navegador reconozca la función globalmente
+window.openModal = function(k) {
     const s = servicios[k];
     if (!s) return;
 
+    // Llenamos los textos
     document.getElementById('modal-title').innerText = s.t;
     document.getElementById('modal-desc').innerText = s.d;
     
-    // Rellenamos datos...
+    // Imagen y accesibilidad
+    const modalImg = document.getElementById('modal-img');
+    if (modalImg) {
+        modalImg.style.backgroundImage = `url('${s.img}')`;
+        modalImg.setAttribute('aria-label', s.alt);
+    }
+    
+    // Campo del formulario y lista de puntos
     document.getElementById('modal-especialidad-val').value = s.t;
     document.getElementById('modal-list').innerHTML = s.p.map(x => `<li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-600 text-[10px]"></i>${x}</li>`).join('');
     
+    // MOSTRAMOS EL MODAL (Fuerza bruta para móvil)
     const m = document.getElementById('modal-global');
     m.classList.remove('hidden');
-    m.classList.add('flex'); // <-- ESTO ES VITAL PARA MÓVILES
+    m.style.display = 'flex'; // Forzamos el estilo flex
     
     setTimeout(() => { 
         m.classList.add('opacity-100'); 
         m.firstElementChild.classList.remove('scale-95'); 
-    }, 10);
+    }, 50);
     
     document.body.style.overflow = 'hidden';
 
-    // OCULTAR VÍDEO
+    // OCULTAMOS EL VÍDEO PARA QUE NO ESTORBE
     const video = document.getElementById('contenedor-video-final');
-    if (video) video.style.display = 'none';
-}
+    if (video) video.style.setProperty('display', 'none', 'important');
+};
+
+window.closeModal = function() {
+    const m = document.getElementById('modal-global');
+    m.classList.remove('opacity-100');
+    m.firstElementChild.classList.add('scale-95');
+    
+    setTimeout(() => { 
+        m.classList.add('hidden'); 
+        m.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }, 300);
+
+    // DEVOLVEMOS EL VÍDEO
+    const video = document.getElementById('contenedor-video-final');
+    if (video) video.style.setProperty('display', 'flex', 'important');
+};
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -838,6 +866,7 @@ function openModal(k) {
 </style>
 </body>
 </html>
+
 
 
 
