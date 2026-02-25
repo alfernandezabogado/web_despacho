@@ -507,29 +507,31 @@ Object.keys(servicios).forEach(k => {
         </div>`;
 });
 
-   function abrirModal(servicio) {
-    // 1. Asignamos el nombre del servicio al título y al campo oculto
+  // FUNCIÓN PARA ABRIR EL FORMULARIO (Compatible con versión 37)
+function abrirModal(servicio) {
+    // 1. Asignamos el nombre al título y al campo oculto
     document.getElementById('modal-titulo').innerText = servicio;
     document.getElementById('modal-servicio').value = servicio;
     
     // 2. Mostramos el modal
     document.getElementById('modal-consulta').classList.remove('hidden');
     
-    // 3. Bloqueamos el scroll del fondo para que el usuario no se pierda
+    // 3. Evitamos que el fondo se mueva
     document.body.style.overflow = 'hidden';
     
-    // 4. OCULTAMOS EL VÍDEO PARA QUE NO ESTORBE AL PULSAR "ENVIAR"
+    // 4. OCULTAMOS EL VÍDEO PARA QUE NO ESTORBE EN EL MÓVIL
     const videoFlotante = document.getElementById('contenedor-video-final');
     if (videoFlotante) {
         videoFlotante.style.display = 'none';
     }
 }
 
+// FUNCIÓN PARA CERRAR EL FORMULARIO
 function cerrarModal() {
     // 1. Escondemos el modal
     document.getElementById('modal-consulta').classList.add('hidden');
     
-    // 2. Devolvemos el scroll normal a la página
+    // 2. Devolvemos el movimiento a la pantalla
     document.body.style.overflow = 'auto';
     
     // 3. VOLVEMOS A MOSTRAR EL VÍDEO
@@ -841,6 +843,7 @@ function cerrarModal() {
 </style>
 </body>
 </html>
+
 
 
 
