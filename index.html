@@ -980,7 +980,6 @@ Object.keys(servicios).forEach(k => {
 </style>
 
 <script>
-// El diccionario de datos se mantiene arriba
 const infoData = {
     'personal': {
         titulo: 'Personal Lawyer',
@@ -1003,28 +1002,21 @@ const infoData = {
         icono: 'fa-briefcase'
     }
 };
-// --- LÓGICA DE INTERACCIÓN Y BLOQUEO DE SALIDA (VERSIÓN DEFINITIVA) ---
-
-let interactuado = false; // Variable de control de ingeniería
 
 function mostrarInfo(key) {
     const data = infoData[key];
     const ventana = document.getElementById('ventana-info');
     
-    // Si es la primera vez que pica, insertamos un "paso" en el historial
-    if (!interactuado) {
-        history.pushState({ interactuado: true }, "");
-        interactuado = true;
-    }
-
+    // Actualizamos icono, título y texto
     document.getElementById('info-icono').innerHTML = `<i class="fa-solid ${data.icono} transition-all duration-300 scale-110"></i>`;
     document.getElementById('info-titulo').innerText = data.titulo;
     document.getElementById('info-texto').innerText = data.texto;
     
+    // Efecto visual de borde y escala
     ventana.style.borderColor = '#d97706';
     ventana.style.transform = 'scale(1.02)';
 
-    // Auto-scroll en móvil
+    // Auto-scroll solo en móvil para centrar la información pulsada
     if (window.innerWidth < 768) {
         setTimeout(() => {
             ventana.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1034,38 +1026,16 @@ function mostrarInfo(key) {
 
 function resetInfo() {
     const ventana = document.getElementById('ventana-info');
+    // En escritorio restauramos el borde suave al quitar el ratón
     if (window.innerWidth >= 768) {
         ventana.style.borderColor = 'rgba(217, 119, 6, 0.3)';
         ventana.style.transform = 'scale(1)';
     }
 }
-
-// ESTA ES LA PIEZA CLAVE: Captura el botón "atrás" del móvil
-window.addEventListener('popstate', function(event) {
-    if (interactuado) {
-        // Mostramos un mensaje claro y profesional
-        const confirmar = confirm("¿Desea salir de la web de Ángel Luis Fernández Sanz?");
-        if (!confirmar) {
-            // Si el cliente dice "Cancelar", volvemos a empujar el historial para bloquear el siguiente "atrás"
-            history.pushState({ interactuado: true }, "");
-        } else {
-            // Si dice "Aceptar", le dejamos salir desactivando el control
-            interactuado = false;
-            window.history.back();
-        }
-    }
-});
-
-// Mantenemos el respaldo para cierres de pestaña o recargas
-window.addEventListener('beforeunload', function (e) {
-    if (interactuado && window.innerWidth < 768) {
-        e.preventDefault();
-        e.returnValue = '';
-    }
-});
 </script>
 
 </body>
 </html>
+
 
 
