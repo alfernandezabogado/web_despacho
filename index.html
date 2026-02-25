@@ -507,35 +507,37 @@ Object.keys(servicios).forEach(k => {
         </div>`;
 });
 
-        function openModal(k) {
-    const s = servicios[k];
-    document.getElementById('modal-title').innerText = s.t;
-    document.getElementById('modal-desc').innerText = s.d;
+     function abrirModal(servicio) {
+    // 1. Asignamos el nombre del servicio al título y al campo oculto
+    document.getElementById('modal-titulo').innerText = servicio;
+    document.getElementById('modal-servicio').value = servicio;
     
-    // Optimizamos la imagen del modal para accesibilidad
-    const modalImg = document.getElementById('modal-img');
-    modalImg.style.backgroundImage = `url('${s.img}')`;
-    modalImg.setAttribute('aria-label', s.alt); // Google sabrá qué hay en la foto del modal
+    // 2. Mostramos el modal
+    document.getElementById('modal-consulta').classList.remove('hidden');
     
-    document.getElementById('modal-especialidad-val').value = s.t;
-    document.getElementById('modal-list').innerHTML = s.p.map(x => `<li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-600 text-[10px]"></i>${x}</li>`).join('');
+    // 3. Bloqueamos el scroll del fondo para que el usuario no se pierda
+    document.body.style.overflow = 'hidden';
     
-    const m = document.getElementById('modal-global');
-    m.classList.remove('hidden');
-    setTimeout(() => { 
-        m.classList.add('opacity-100'); 
-        m.firstElementChild.classList.remove('scale-95'); 
-    }, 10);
-    document.body.classList.add('modal-active');
+    // 4. OCULTAMOS EL VÍDEO PARA QUE NO ESTORBE AL PULSAR "ENVIAR"
+    const videoFlotante = document.getElementById('contenedor-video-final');
+    if (videoFlotante) {
+        videoFlotante.style.display = 'none';
+    }
 }
 
-        function closeModal() {
-            const m = document.getElementById('modal-global');
-            m.classList.remove('opacity-100');
-            m.firstElementChild.classList.add('scale-95');
-            setTimeout(() => { m.classList.add('hidden'); document.body.classList.remove('modal-active'); }, 300);
-        }
-
+function cerrarModal() {
+    // 1. Escondemos el modal
+    document.getElementById('modal-consulta').classList.add('hidden');
+    
+    // 2. Devolvemos el scroll normal a la página
+    document.body.style.overflow = 'auto';
+    
+    // 3. VOLVEMOS A MOSTRAR EL VÍDEO
+    const videoFlotante = document.getElementById('contenedor-video-final');
+    if (videoFlotante) {
+        videoFlotante.style.display = 'block';
+    }
+}
         // --- LÓGICA DE ENVÍO INTEGRADA ---
         async function enviarFormulario(event, formId) {
     event.preventDefault();
@@ -839,6 +841,7 @@ Object.keys(servicios).forEach(k => {
 </style>
 </body>
 </html>
+
 
 
 
