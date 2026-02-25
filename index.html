@@ -63,12 +63,12 @@
 <body class="text-slate-900 antialiased">
 
    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
-    <div class="max-w-7xl mx-auto px-2 md:px-4 h-20 flex justify-between items-center gap-2">
+    <div class="max-w-7xl mx-auto px-2 md:px-4 h-20 flex justify-between items-center gap-1">
         
         <div class="flex items-center gap-2 flex-shrink-0">
-            <img src="logo4.png" alt="Logotipo" class="h-10 md:h-12 w-auto object-contain rounded-full">
+            <img src="logo4.png" alt="Logotipo" class="h-9 md:h-12 w-auto object-contain rounded-full">
             <div class="flex flex-col">
-                <span class="text-[10px] md:text-sm font-bold uppercase text-slate-900 leading-tight">
+                <span class="text-[9px] md:text-sm font-bold uppercase text-slate-900 leading-tight">
                     Ángel Luis Fernández Sanz
                 </span>
                 <span class="text-[7px] md:text-[9px] font-semibold tracking-wider uppercase text-amber-600">
@@ -78,16 +78,18 @@
         </div>
 
         <div class="hidden lg:flex items-center gap-4 xl:gap-8">
-    <a href="#inicio" class="text-[11px] xl:text-sm font-bold text-slate-700 hover:text-amber-600 transition">INICIO</a>
-    <a href="#servicios" class="text-[11px] xl:text-sm font-bold text-slate-700 hover:text-amber-600 transition">ESPECIALIDADES</a>
-    <a href="#complementarios" class="text-[11px] xl:text-sm font-bold text-slate-700 hover:text-amber-600 transition whitespace-nowrap uppercase tracking-tighter">Servicios Complementarios</a>
-</div>
+            <a href="#inicio" class="text-[11px] xl:text-sm font-bold text-slate-700 hover:text-amber-600 transition">INICIO</a>
+            <a href="#servicios" class="text-[11px] xl:text-sm font-bold text-slate-700 hover:text-amber-600 transition">ESPECIALIDADES</a>
+            <a href="#complementarios" class="text-[11px] xl:text-sm font-bold text-slate-700 hover:text-amber-600 transition whitespace-nowrap uppercase tracking-tighter">Servicios</a>
+        </div>
 
         <div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
-            <a href="tel:+34658421467" class="hidden sm:flex items-center gap-2 text-[11px] font-bold text-slate-800 bg-slate-50 px-2 py-2 rounded-lg border border-slate-100 transition-all hover:bg-white">
-                <i class="fas fa-phone-alt text-amber-600"></i> 658 42 14 67
+            <a href="tel:+34658421467" class="flex items-center justify-center w-8 h-8 md:w-auto md:h-auto bg-amber-600 md:bg-slate-50 text-white md:text-slate-800 p-2 md:px-3 md:py-2 rounded-full md:rounded-lg border-none md:border md:border-slate-100 transition-all">
+                <i class="fas fa-phone-alt text-xs md:text-amber-600"></i>
+                <span class="hidden md:inline ml-2 text-[11px] font-bold">658 42 14 67</span>
             </a>
-            <a href="#contacto" class="bg-amber-600 hover:bg-amber-700 text-white text-[10px] md:text-[11px] font-bold uppercase tracking-widest px-3 md:px-4 py-2 md:py-3 rounded shadow-md transition-all text-center whitespace-nowrap">
+            
+            <a href="#contacto" class="bg-amber-600 hover:bg-amber-700 text-white text-[9px] md:text-[11px] font-bold uppercase tracking-tight md:tracking-widest px-2.5 md:px-4 py-2 md:py-3 rounded shadow-md transition-all text-center whitespace-nowrap">
                 Iniciar Consulta
             </a>
         </div>
@@ -859,6 +861,7 @@ Object.keys(servicios).forEach(k => {
 </style>
 </body>
 </html>
+
 
 
 
