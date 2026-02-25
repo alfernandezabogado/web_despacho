@@ -540,9 +540,13 @@ Object.keys(servicios).forEach(k => {
             const m = document.getElementById('modal-global');
             m.classList.remove('hidden');
             m.style.display = 'flex';
-            // Resetea el scroll interno del modal
+            
+            // --- NUEVO: Crea una entrada en el historial para que 'atrás' no cierre la web ---
+            history.pushState({ modalOpen: true }, "");
+
             const modalContent = document.querySelector('#modal-global > div');
             if (modalContent) modalContent.scrollTop = 0;
+            
             setTimeout(() => { 
                 m.classList.add('opacity-100'); 
                 m.firstElementChild.classList.remove('scale-95'); 
@@ -555,6 +559,11 @@ Object.keys(servicios).forEach(k => {
         }
 
         function closeModal() {
+            // --- NUEVO: Si cerramos con la X, eliminamos la entrada del historial que creamos ---
+            if (history.state && history.state.modalOpen) {
+                history.back();
+            }
+
             const m = document.getElementById('modal-global');
             m.classList.remove('opacity-100');
             m.firstElementChild.classList.add('scale-95');
@@ -568,6 +577,23 @@ Object.keys(servicios).forEach(k => {
             const video = document.getElementById('contenedor-video-final');
             if (video) video.style.display = 'block';
         }
+
+        // --- NUEVO: Escuchador para el botón "Atrás" físico del móvil ---
+        window.addEventListener('popstate', function(event) {
+            const m = document.getElementById('modal-global');
+            if (m && !m.classList.contains('hidden')) {
+                // Ejecutamos la animación de cierre
+                m.classList.remove('opacity-100');
+                m.firstElementChild.classList.add('scale-95');
+                setTimeout(() => {
+                    m.classList.add('hidden');
+                    m.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    const video = document.getElementById('contenedor-video-final');
+                    if (video) video.style.display = 'block';
+                }, 300);
+            }
+        });
 
         // --- FUNCIÓN PARA EL MODAL LEGAL ---
         function cerrarLegal() {
@@ -833,6 +859,7 @@ Object.keys(servicios).forEach(k => {
 </style>
 </body>
 </html>
+
 
 
 
