@@ -980,6 +980,7 @@ Object.keys(servicios).forEach(k => {
 </style>
 
 <script>
+// El diccionario de datos se mantiene arriba
 const infoData = {
     'personal': {
         titulo: 'Personal Lawyer',
@@ -988,7 +989,7 @@ const infoData = {
     },
     'experiencia': {
         titulo: 'Trayectoria Nacional',
-        texto: 'Más de 30 años de ejercicio profesional. Colegiado desde 1992, he dirigido la defensa de asuntos complejos en juzgados y tribunales de toda la geografía española.',
+        texto: 'Más de 30 años de ejercicio profesional. Colegiado desde 1993, he dirigido la defensa de asuntos complejos en juzgados y tribunales de toda la geografía española.',
         icono: 'fa-gavel'
     },
     'uex': {
@@ -998,7 +999,7 @@ const infoData = {
     },
     'concursal': {
         titulo: 'Solvencia Técnica',
-        texto: 'Mediador Civil y Mercantil Titulado. Busco la solución técnica más eficiente para la viabilidad económica. Administración Concursal y Segunda Oportunidad',
+        texto: 'Especialista en Derecho Mercantil y gestión de insolvencias. Como Administrador Concursal y Mediador, busco la solución técnica más eficiente para la viabilidad económica.',
         icono: 'fa-briefcase'
     }
 };
@@ -1007,19 +1008,15 @@ function mostrarInfo(key) {
     const data = infoData[key];
     const ventana = document.getElementById('ventana-info');
     
-    // 1. Cambiamos el contenido
     document.getElementById('info-icono').innerHTML = `<i class="fa-solid ${data.icono} transition-all duration-300 scale-110"></i>`;
     document.getElementById('info-titulo').innerText = data.titulo;
     document.getElementById('info-texto').innerText = data.texto;
     
-    // 2. Efecto visual
     ventana.style.borderColor = '#d97706';
     ventana.style.transform = 'scale(1.02)';
 
-    // 3. LA CLAVE PARA EL MÓVIL: Auto-scroll
-    // Si el ancho de pantalla es menor a 768px (móvil/tablet)
+    // Auto-scroll en móvil
     if (window.innerWidth < 768) {
-        // Esperamos un instante a que el texto cambie y movemos la vista a la ventana
         setTimeout(() => {
             ventana.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
@@ -1028,10 +1025,22 @@ function mostrarInfo(key) {
 
 function resetInfo() {
     const ventana = document.getElementById('ventana-info');
-    ventana.style.borderColor = 'rgba(217, 119, 6, 0.3)';
-    ventana.style.transform = 'scale(1)';
+    if (window.innerWidth >= 768) {
+        ventana.style.borderColor = 'rgba(217, 119, 6, 0.3)';
+        ventana.style.transform = 'scale(1)';
+    }
+}
+
+// GUARDIÁN DE SALIDA (Solo móvil)
+// Evita cierres accidentales al usar gestos o botón atrás
+if (window.innerWidth < 768) {
+    window.addEventListener('beforeunload', function (e) {
+        e.preventDefault();
+        e.returnValue = ''; // El navegador mostrará su mensaje estándar
+    });
 }
 </script>
 
 </body>
 </html>
+
