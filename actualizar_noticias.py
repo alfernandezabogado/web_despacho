@@ -8,7 +8,7 @@ from email.message import EmailMessage
 # --- CONFIGURACIÓN DE EMAIL ---
 EMAIL_EMISOR = "despachofernandezsanz@gmail.com"
 EMAIL_RECEPTOR = "despachofernandezsanz@gmail.com"
-# Si usas Gmail, necesitas una "Contraseña de Aplicación" de 16 letras
+# Contraseña de Aplicación de 16 letras
 EMAIL_PASSWORD = "yfym yfzv hdne senq" 
 
 def enviar_notificacion(categoria, titulo, url):
@@ -42,7 +42,6 @@ def enviar_notificacion(categoria, titulo, url):
 def generar_noticias_del_dia():
     fecha_hoy = datetime.datetime.now().strftime("%d de %B, %Y")
     
-    # NOTA: Cambia estas URLs por enlaces .pdf reales para probar el envío
     noticias = {
         "familia": {
             "titulo": "Custodia Compartida y Distancia Geográfica",
@@ -76,7 +75,6 @@ def actualizar_archivos():
     
     # --- PROCESO DE ENVÍO DE EMAIL ---
     for cat, data in nuevas_noticias.items():
-        # SOLO envía si el link es un PDF (Tu filtro de valor)
         if data['url_fuente'].lower().endswith('.pdf'):
             enviar_notificacion(cat, data['titulo'], data['url_fuente'])
 
@@ -85,14 +83,12 @@ def actualizar_archivos():
         json.dump(nuevas_noticias, f, ensure_ascii=False, indent=4)
     print("✅ noticias.json actualizado.")
 
-    # --- PARTE B: HISTORIAL (Opcional: Guardar en HDD 1TB) ---
+    # --- PARTE B: HISTORIAL (Almacenamiento en frío) ---
     archivo_historial = 'historico_noticias.csv' 
-    # Aquí podrías poner 'D:/historico_noticias.csv' para usar tu HDD
+    # Para usar tu HDD de 1 TB: archivo_historial = 'D:/historico_noticias.csv'
     
     existe_archivo = os.path.isfile(archivo_historial)
-    with open(archivo_historial, 'a', newline='', encoding='utf-8') as
-    
- # ... (continuación del bloque with open del historial)
+    with open(archivo_historial, 'a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         if not existe_archivo:
             writer.writerow(['Fecha', 'Categoría', 'Título', 'Enlace Fuente'])
@@ -102,6 +98,5 @@ def actualizar_archivos():
     
     print(f"✅ Historial actualizado en {archivo_historial}.")
 
-# ESTA PARTE DEBE IR SIN ESPACIOS AL PRINCIPIO (PEGADA AL MARGEN IZQUIERDO)
 if __name__ == "__main__":
     actualizar_archivos()
