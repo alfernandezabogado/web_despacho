@@ -9,8 +9,8 @@ noticias = {
         "fecha": datetime.datetime.now().strftime("%d de %B, %Y")
     },
     "penal": {
-        "titulo": "Reformas en Seguridad Vial",
-        "cuerpo": "Novedades legislativas endurecen las sanciones administrativas por distracciones al volante. Es vital conocer los nuevos márgenes de interpretación judicial.",
+        "titulo": "Jurisprudencia: Delitos contra el Patrimonio",
+        "cuerpo": "Análisis de las últimas sentencias sobre la atenuante de reparación del daño en delitos económicos. La interpretación del Tribunal Supremo sobre la voluntad de resarcimiento antes del juicio oral.",
         "fecha": datetime.datetime.now().strftime("%d de %B, %Y")
     },
     "mercantil": {
