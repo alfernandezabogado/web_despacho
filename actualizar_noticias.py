@@ -2,36 +2,69 @@ import json
 import datetime
 import csv
 import os
+import smtplib
+from email.message import EmailMessage
 
-# 1. SIMULACIÓN DE AGENTE DE BÚSQUEDA JURÍDICA
-# En una fase avanzada, aquí conectaríamos con APIs de BOE o CENDOJ.
-# Por ahora, definimos la estructura que alimentará tu web hoy.
+# --- CONFIGURACIÓN DE EMAIL ---
+EMAIL_EMISOR = "tu_correo@gmail.com"
+EMAIL_RECEPTOR = "tu_correo@gmail.com"
+# Si usas Gmail, necesitas una "Contraseña de Aplicación" de 16 letras
+EMAIL_PASSWORD = "tu_password_aqui" 
+
+def enviar_notificacion(categoria, titulo, url):
+    """Envía un email solo si se localiza un PDF directo."""
+    msg = EmailMessage()
+    msg['Subject'] = f"⚖️ SENTENCIA LOCALIZADA: {categoria.upper()}"
+    msg['From'] = EMAIL_EMISOR
+    msg['To'] = EMAIL_RECEPTOR
+    
+    contenido = f"""
+    Hola Ángel,
+    
+    El bot de madrugada ha localizado un documento oficial:
+    
+    📌 TÍTULO: {titulo}
+    📂 CATEGORÍA: {categoria.upper()}
+    🔗 ENLACE PDF: {url}
+    
+    Este enlace se ha actualizado automáticamente en noticias.json.
+    """
+    msg.set_content(contenido)
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(EMAIL_EMISOR, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+        print(f"📧 Email enviado para la categoría: {categoria}")
+    except Exception as e:
+        print(f"❌ Error al enviar email: {e}")
 
 def generar_noticias_del_dia():
     fecha_hoy = datetime.datetime.now().strftime("%d de %B, %Y")
     
+    # NOTA: Cambia estas URLs por enlaces .pdf reales para probar el envío
     noticias = {
         "familia": {
             "titulo": "Custodia Compartida y Distancia Geográfica",
-            "cuerpo": "El Tribunal Supremo unifica doctrina: la distancia entre domicilios solo es obstáculo si impide el desarrollo normal de la vida del menor, priorizando la corresponsabilidad.",
+            "cuerpo": "El Tribunal Supremo unifica doctrina...",
             "fecha": fecha_hoy,
-            "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
+            "url_fuente": "https://www.poderjudicial.es/ejemplo.pdf" 
         },
         "penal": {
             "titulo": "Prueba Digital en el Proceso Penal",
-            "cuerpo": "Nuevas directrices sobre la cadena de custodia en capturas de pantalla de aplicaciones de mensajería. Se requiere pericial técnica en caso de impugnación de autenticidad.",
+            "cuerpo": "Nuevas directrices sobre la cadena de custodia...",
             "fecha": fecha_hoy,
-            "url_fuente": "https://www.boe.es"
+            "url_fuente": "https://www.boe.es/ejemplo.pdf"
         },
         "mercantil": {
             "titulo": "Responsabilidad de Administradores",
-            "cuerpo": "Clarificación sobre el deber de diligencia: la insolvencia de la sociedad no implica automáticamente la responsabilidad personal si se acredita la solicitud de concurso en plazo.",
+            "cuerpo": "Clarificación sobre el deber de diligencia...",
             "fecha": fecha_hoy,
             "url_fuente": "https://www.cnmv.es"
         },
         "extranjeria": {
             "titulo": "Arraigo para la Formación: Novedades",
-            "cuerpo": "Instrucciones actualizadas sobre los cursos habilitados para la prórroga de residencia. Se amplía el catálogo de centros oficiales autorizados por el Ministerio.",
+            "cuerpo": "Instrucciones actualizadas...",
             "fecha": fecha_hoy,
             "url_fuente": "https://extranjeros.inclusion.gob.es/"
         }
@@ -41,28 +74,20 @@ def generar_noticias_del_dia():
 def actualizar_archivos():
     nuevas_noticias = generar_noticias_del_dia()
     
-    # --- PARTE A: ACTUALIZAR LA WEB (SOBRESCRITURA) ---
-    # Esto es lo que lee el index.html cada día
+    # --- PROCESO DE ENVÍO DE EMAIL ---
+    for cat, data in nuevas_noticias.items():
+        # SOLO envía si el link es un PDF (Tu filtro de valor)
+        if data['url_fuente'].lower().endswith('.pdf'):
+            enviar_notificacion(cat, data['titulo'], data['url_fuente'])
+
+    # --- PARTE A: ACTUALIZAR LA WEB ---
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(nuevas_noticias, f, ensure_ascii=False, indent=4)
-    print("✅ noticias.json actualizado para la web.")
+    print("✅ noticias.json actualizado.")
 
-    # --- PARTE B: GUARDAR EL HISTORIAL (ACUMULACIÓN) ---
-    # Esto es para tu control personal. Crea un CSV si no existe y añade la línea.
-    archivo_historial = 'historico_noticias.csv'
+    # --- PARTE B: HISTORIAL (Opcional: Guardar en HDD 1TB) ---
+    archivo_historial = 'historico_noticias.csv' 
+    # Aquí podrías poner 'D:/historico_noticias.csv' para usar tu HDD
+    
     existe_archivo = os.path.isfile(archivo_historial)
-    
-    with open(archivo_historial, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        # Si es nuevo, ponemos cabeceras
-        if not existe_archivo:
-            writer.writerow(['Fecha', 'Categoría', 'Título', 'Enlace Fuente'])
-        
-        # Añadimos las 4 noticias de hoy al historial
-        for cat, data in nuevas_noticias.items():
-            writer.writerow([data['fecha'], cat.upper(), data['titulo'], data['url_fuente']])
-    
-    print(f"✅ Historial actualizado en {archivo_historial}.")
-
-if __name__ == "__main__":
-    actualizar_archivos()
+    with open(archivo_historial, 'a', newline='', encoding='utf-8') as
