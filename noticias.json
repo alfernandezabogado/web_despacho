@@ -1,22 +1,26 @@
 {
-  "familia": {
-    "titulo": "Actualidad en Custodia Compartida - Marzo 2026",
-    "cuerpo": "El Tribunal Supremo refuerza el derecho de los menores a mantener la estabilidad en su entorno habitual tras el divorcio, priorizando el interés superior del niño en las sentencias más recientes.",
-    "fecha": "08 de March, 2026"
-  },
-  "penal": {
-    "titulo": "Jurisprudencia: Delitos contra el Patrimonio",
-    "cuerpo": "Análisis de las últimas sentencias sobre la atenuante de reparación del daño en delitos económicos. La interpretación del Tribunal Supremo sobre la voluntad de resarcimiento antes del juicio oral.",
-    "fecha": "08 de March, 2026"
-  },
-  "mercantil": {
-    "titulo": "Responsabilidad de Administradores",
-    "cuerpo": "La nueva jurisprudencia aclara los límites de la responsabilidad personal en sociedades limitadas ante deudas imprevistas. Proteja su patrimonio empresarial.",
-    "fecha": "08 de March, 2026"
-  },
-  "extranjeria": {
-    "titulo": "Agilización de Nacionalidad Española",
-    "cuerpo": "Justicia implementa nuevos procesos digitales para reducir los tiempos de espera en los expedientes de nacionalidad por residencia durante este trimestre.",
-    "fecha": "08 de March, 2026"
-  }
+    "familia": {
+        "titulo": "Custodia Compartida y Distancia Geográfica",
+        "cuerpo": "El Tribunal Supremo unifica doctrina: la distancia entre domicilios solo es obstáculo si impide el desarrollo normal de la vida del menor, priorizando la corresponsabilidad.",
+        "fecha": "08 de March, 2026",
+        "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
+    },
+    "penal": {
+        "titulo": "Prueba Digital en el Proceso Penal",
+        "cuerpo": "Nuevas directrices sobre la cadena de custodia en capturas de pantalla de aplicaciones de mensajería. Se requiere pericial técnica en caso de impugnación de autenticidad.",
+        "fecha": "08 de March, 2026",
+        "url_fuente": "https://www.boe.es"
+    },
+    "mercantil": {
+        "titulo": "Responsabilidad de Administradores",
+        "cuerpo": "Clarificación sobre el deber de diligencia: la insolvencia de la sociedad no implica automáticamente la responsabilidad personal si se acredita la solicitud de concurso en plazo.",
+        "fecha": "08 de March, 2026",
+        "url_fuente": "https://www.cnmv.es"
+    },
+    "extranjeria": {
+        "titulo": "Arraigo para la Formación: Novedades",
+        "cuerpo": "Instrucciones actualizadas sobre los cursos habilitados para la prórroga de residencia. Se amplía el catálogo de centros oficiales autorizados por el Ministerio.",
+        "fecha": "08 de March, 2026",
+        "url_fuente": "https://extranjeros.inclusion.gob.es/"
+    }
 }
