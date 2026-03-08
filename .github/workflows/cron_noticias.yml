@@ -1,0 +1,24 @@
+name: Actualizar Noticias Jurídicas
+on:
+  schedule:
+    - cron: '0 4 * * *' 
+  workflow_dispatch: 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configurar Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Ejecutar Script
+        run: python actualizar_noticias.py
+      - name: Subir cambios
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add noticias.json
+          git commit -m "v51: Actualización automática" || exit 0
+          git push
