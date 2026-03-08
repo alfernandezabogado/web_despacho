@@ -1,0 +1,24 @@
+name: Ejecucion Diaria Bot Juridico
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Esto es a las 07:00 AM hora de España (6:00 UTC)
+  workflow_dispatch: # Permite ejecutarlo manualmente para probar
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Ejecutar Bot
+        env:
+          # Usamos "Secrets" para que tu contraseña no sea publica
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python bot_juridico.py
