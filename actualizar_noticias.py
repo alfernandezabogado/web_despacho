@@ -91,3 +91,17 @@ def actualizar_archivos():
     
     existe_archivo = os.path.isfile(archivo_historial)
     with open(archivo_historial, 'a', newline='', encoding='utf-8') as
+    
+ # ... (continuación del bloque with open del historial)
+        writer = csv.writer(f)
+        if not existe_archivo:
+            writer.writerow(['Fecha', 'Categoría', 'Título', 'Enlace Fuente'])
+            
+        for cat, data in nuevas_noticias.items():
+            writer.writerow([data['fecha'], cat.upper(), data['titulo'], data['url_fuente']])
+    
+    print(f"✅ Historial actualizado en {archivo_historial}.")
+
+# ESTA PARTE DEBE IR SIN ESPACIOS AL PRINCIPIO (PEGADA AL MARGEN IZQUIERDO)
+if __name__ == "__main__":
+    actualizar_archivos()
