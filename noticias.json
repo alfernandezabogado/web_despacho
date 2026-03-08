@@ -1,26 +1,26 @@
 {
     "familia": {
         "titulo": "Custodia Compartida y Distancia Geográfica",
-        "cuerpo": "El Tribunal Supremo unifica doctrina: la distancia entre domicilios solo es obstáculo si impide el desarrollo normal de la vida del menor, priorizando la corresponsabilidad.",
+        "cuerpo": "El Tribunal Supremo unifica doctrina...",
         "fecha": "08 de March, 2026",
-        "url_fuente": "https://www.boe.es/boe/dias/2024/02/15/pdfs/BOE-A-2024-2845.pdf"
+        "url_fuente": "https://www.poderjudicial.es/ejemplo.pdf"
     },
     "penal": {
         "titulo": "Prueba Digital en el Proceso Penal",
-        "cuerpo": "Nuevas directrices sobre la cadena de custodia en capturas de pantalla de aplicaciones de mensajería. Se requiere pericial técnica en caso de impugnación de autenticidad.",
+        "cuerpo": "Nuevas directrices sobre la cadena de custodia...",
         "fecha": "08 de March, 2026",
-        "url_fuente": "https://www.boe.es/boe/dias/2024/01/12/pdfs/BOE-A-2024-712.pdf"
+        "url_fuente": "https://www.boe.es/ejemplo.pdf"
     },
     "mercantil": {
         "titulo": "Responsabilidad de Administradores",
-        "cuerpo": "Clarificación sobre el deber de diligencia: la insolvencia de la sociedad no implica automáticamente la responsabilidad personal si se acredita la solicitud de concurso en plazo.",
+        "cuerpo": "Clarificación sobre el deber de diligencia...",
         "fecha": "08 de March, 2026",
-        "url_fuente": "https://www.boe.es/boe/dias/2024/03/01/pdfs/BOE-A-2024-4001.pdf"
+        "url_fuente": "https://www.cnmv.es"
     },
     "extranjeria": {
         "titulo": "Arraigo para la Formación: Novedades",
-        "cuerpo": "Instrucciones actualizadas sobre los cursos habilitados para la prórroga de residencia. Se amplía el catálogo de centros oficiales autorizados por el Ministerio.",
+        "cuerpo": "Instrucciones actualizadas...",
         "fecha": "08 de March, 2026",
-        "url_fuente": "https://www.boe.es/boe/dias/2024/02/20/pdfs/BOE-A-2024-3200.pdf"
+        "url_fuente": "https://extranjeros.inclusion.gob.es/"
     }
 }
