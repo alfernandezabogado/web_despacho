@@ -6,10 +6,10 @@ import smtplib
 from email.message import EmailMessage
 
 # --- CONFIGURACIÓN DE EMAIL ---
-EMAIL_EMISOR = "tu_correo@gmail.com"
-EMAIL_RECEPTOR = "tu_correo@gmail.com"
+EMAIL_EMISOR = "despachofernandezsanz@gmail.com"
+EMAIL_RECEPTOR = "despachofernandezsanz@gmail.com"
 # Si usas Gmail, necesitas una "Contraseña de Aplicación" de 16 letras
-EMAIL_PASSWORD = "tu_password_aqui" 
+EMAIL_PASSWORD = "yfym yfzv hdne senq" 
 
 def enviar_notificacion(categoria, titulo, url):
     """Envía un email solo si se localiza un PDF directo."""
