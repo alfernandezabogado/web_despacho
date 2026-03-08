@@ -2,12 +2,16 @@ name: Ejecucion Diaria Bot Juridico
 
 on:
   schedule:
-    - cron: '0 6 * * *' # Esto es a las 07:00 AM hora de España (6:00 UTC)
-  workflow_dispatch: # Permite ejecutarlo manualmente para probar
+    - cron: '0 6 * * *' # 07:00 AM hora de España (6:00 UTC)
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Permisos necesarios para que el bot pueda escribir en tu repositorio
+    permissions:
+      contents: write
+      
     steps:
       - name: Descargar codigo
         uses: actions/checkout@v3
@@ -19,6 +23,13 @@ jobs:
 
       - name: Ejecutar Bot
         env:
-          # Usamos "Secrets" para que tu contraseña no sea publica
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: python bot_juridico.py
+
+      - name: Guardar cambios en el repositorio
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "actions@github.com"
+          git add noticias.json historico_noticias.csv
+          git commit -m "Bot: Actualización diaria de noticias y PDF [$(date)]" || echo "No hay cambios para subir"
+          git push
