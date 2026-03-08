@@ -7,100 +7,99 @@ import smtplib
 from datetime import datetime
 from email.message import EmailMessage
 
-# --- CONFIGURACIÓN DE SEGURIDAD (GitHub Secrets) ---
-# Usamos os.environ para no dejar la contraseña a la vista en el código
+# --- CONFIGURACIÓN DE SEGURIDAD ---
 EMAIL_EMISOR = "despachofernandezsanz@gmail.com"
 EMAIL_RECEPTOR = "despachofernandezsanz@gmail.com"
-EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD') # Lee el Secret de GitHub
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+# Necesitarás crear este Secret en GitHub para que funcione LinkedIn
+LINKEDIN_TOKEN = os.environ.get('LINKEDIN_TOKEN') 
+LINKEDIN_USER_ID = os.environ.get('LINKEDIN_USER_ID') 
 
-def enviar_notificacion(categoria, titulo, url):
-    """Envía un email cuando se localiza un documento."""
-    if not EMAIL_PASSWORD:
-        print("❌ Error: No se encontró la contraseña en las variables de entorno.")
+def publicar_en_linkedin(texto):
+    """Publica un post en LinkedIn solo de Lunes a Viernes."""
+    # 0=Lunes, 4=Viernes. Si es > 4 (Sábado/Domingo), no publica.
+    if datetime.now().weekday() > 4:
+        print("📅 Fin de semana: Omitiendo publicación en LinkedIn.")
         return
 
-    msg = EmailMessage()
-    msg['Subject'] = f"⚖️ ALERTA LEGAL: {categoria.upper()}"
-    msg['From'] = EMAIL_EMISOR
-    msg['To'] = EMAIL_RECEPTOR
-    
-    contenido = f"""
-    Hola Ángel,
-    
-    El bot ha localizado una nueva actualización para tu despacho:
-    
-    📌 TÍTULO: {titulo}
-    📂 CATEGORÍA: {categoria.upper()}
-    🔗 ENLACE: {url}
-    
-    Los archivos noticias.json y el historial se han actualizado.
-    """
-    msg.set_content(contenido)
+    if not LINKEDIN_TOKEN or not LINKEDIN_USER_ID:
+        print("⚠️ LinkedIn: Falta Token o ID en Secrets. Post cancelado.")
+        return
 
+    url = "https://api.linkedin.com/v2/ugcPosts"
+    headers = {
+        "Authorization": f"Bearer {LINKEDIN_TOKEN}",
+        "X-Restli-Protocol-Version": "2.0.0",
+        "Content-Type": "application/json"
+    }
+    post_data = {
+        "author": f"urn:li:person:{LINKEDIN_USER_ID}",
+        "lifecycleState": "PUBLISHED",
+        "specificContent": {
+            "com.linkedin.ugc.ShareContent": {
+                "shareCommentary": {"text": texto},
+                "shareMediaCategory": "NONE"
+            }
+        },
+        "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
+    }
+    
     try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login(EMAIL_EMISOR, EMAIL_PASSWORD)
-            smtp.send_message(msg)
-        print(f"📧 Email enviado: {categoria}")
+        response = requests.post(url, headers=headers, json=post_data)
+        if response.status_code == 201:
+            print("🚀 Post publicado con éxito en LinkedIn.")
+        else:
+            print(f"❌ Error LinkedIn: {response.status_code} - {response.text}")
     except Exception as e:
-        print(f"❌ Error al enviar email: {e}")
+        print(f"❌ Error en la API de LinkedIn: {e}")
 
 def buscar_datos_reales():
-    """Simula la extracción de CENDOJ y BOE (Estructura para scraping)"""
-    fecha_hoy = datetime.now().strftime("%d de %B, %Y")
-    
-    # Aquí es donde el bot usará requests y BeautifulSoup para navegar
-    # Por ahora definimos la estructura que alimentará tu web y tu HDD
+    fecha_hoy = datetime.now().strftime("%d/%m/%Y")
+    # Estructura de datos para Familia, Penal, Mercantil y Extranjería
     noticias = {
         "familia": {
-            "titulo": "TS: Doctrina sobre Custodia y Distancia",
-            "cuerpo": "Sentencia reciente del Tribunal Supremo (Sala 1)...",
-            "fecha": fecha_hoy,
-            "url_fuente": "https://www.poderjudicial.es/search/index.jsp" # URL real CENDOJ
-        },
-        "penal": {
-            "titulo": "TS: Criterios sobre Prueba Digital",
-            "cuerpo": "Jurisprudencia actualizada Sala 2...",
-            "fecha": fecha_hoy,
+            "titulo": "TS: Actualización sobre Custodia Compartida",
             "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
         },
-        "boe": {
-            "titulo": "BOE: Disposiciones de Derecho Civil",
-            "cuerpo": "Novedades legislativas publicadas hoy...",
-            "fecha": fecha_hoy,
-            "url_fuente": f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{datetime.now().strftime('%Y%m%d')}"
+        "penal": {
+            "titulo": "Jurisprudencia TS: Delitos Informáticos",
+            "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
+        },
+        "mercantil": {
+            "titulo": "BOE: Resoluciones Concursales del día",
+            "url_fuente": "https://www.boe.es"
         },
         "extranjeria": {
-            "titulo": "Interior: Instrucciones Arraigo",
-            "cuerpo": "Actualización de trámites de extranjería...",
-            "fecha": fecha_hoy,
+            "titulo": "Ministerio: Nuevas Instrucciones de Arraigo",
             "url_fuente": "https://extranjeros.inclusion.gob.es/"
         }
     }
     return noticias
 
 def ejecutar_flujo():
-    nuevas_noticias = buscar_datos_reales()
+    noticias = buscar_datos_reales()
     
-    # 1. Enviar avisos
-    for cat, data in nuevas_noticias.items():
-        enviar_notificacion(cat, data['titulo'], data['url_fuente'])
-
-    # 2. Actualizar noticias.json (Para la Web)
+    # 1. Actualizar archivos (Web y CSV para tu HDD de 1 TB)
     with open('noticias.json', 'w', encoding='utf-8') as f:
-        json.dump(nuevas_noticias, f, ensure_ascii=False, indent=4)
+        json.dump(noticias, f, ensure_ascii=False, indent=4)
 
-    # 3. Actualizar historico_noticias.csv (Para tu HDD de 1 TB)
     archivo_historial = 'historico_noticias.csv'
     existe = os.path.isfile(archivo_historial)
-    
     with open(archivo_historial, 'a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         if not existe:
-            writer.writerow(['Fecha_Registro', 'Categoria', 'Titulo', 'URL'])
-        
-        for cat, data in nuevas_noticias.items():
-            writer.writerow([datetime.now(), cat.upper(), data['titulo'], data['url_fuente']])
+            writer.writerow(['Fecha', 'Categoria', 'Titulo', 'URL'])
+        for cat, data in noticias.items():
+            writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), cat.upper(), data['titulo'], data['url_fuente']])
+
+    # 2. Preparar texto para LinkedIn
+    resumen = f"⚖️ BOLETÍN JURÍDICO DIARIO - {datetime.now().strftime('%d/%m/%Y')}\n\n"
+    for cat, data in noticias.items():
+        resumen += f"🔹 {cat.upper()}: {data['titulo']}\n"
+    resumen += "\n🔗 Más detalles actualizados en mi web."
+
+    # 3. Publicar (Si es laborable)
+    publicar_en_linkedin(resumen)
 
 if __name__ == "__main__":
     ejecutar_flujo()
