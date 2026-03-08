@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Permisos necesarios para que el bot pueda escribir en tu repositorio
     permissions:
       contents: write
       
@@ -24,12 +23,15 @@ jobs:
       - name: Ejecutar Bot
         env:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-        run: python bot_juridico.py
+        # Corregido: usamos el nombre real del archivo en tu repositorio
+        run: python actualizar_noticias.py
 
       - name: Guardar cambios en el repositorio
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "actions@github.com"
-          git add noticias.json historico_noticias.csv
-          git commit -m "Bot: Actualización diaria de noticias y PDF [$(date)]" || echo "No hay cambios para subir"
+          # Agregamos solo si los archivos existen para evitar errores
+          git add noticias.json || echo "noticias.json no encontrado"
+          git add historico_noticias.csv || echo "historico_noticias.csv no encontrado"
+          git commit -m "Bot: Actualización diaria [$(date)]" || echo "No hay cambios para subir"
           git push
