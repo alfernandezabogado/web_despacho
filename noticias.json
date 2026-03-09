@@ -1,26 +1,18 @@
 {
     "familia": {
-        "titulo": "Custodia Compartida y Distancia Geográfica",
-        "cuerpo": "El Tribunal Supremo unifica doctrina...",
-        "fecha": "08 de March, 2026",
-        "url_fuente": "https://www.poderjudicial.es/ejemplo.pdf"
+        "titulo": "TS: Actualización sobre Custodia Compartida",
+        "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
     },
     "penal": {
-        "titulo": "Prueba Digital en el Proceso Penal",
-        "cuerpo": "Nuevas directrices sobre la cadena de custodia...",
-        "fecha": "08 de March, 2026",
-        "url_fuente": "https://www.boe.es/ejemplo.pdf"
+        "titulo": "Jurisprudencia TS: Delitos Informáticos",
+        "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
     },
     "mercantil": {
-        "titulo": "Responsabilidad de Administradores",
-        "cuerpo": "Clarificación sobre el deber de diligencia...",
-        "fecha": "08 de March, 2026",
-        "url_fuente": "https://www.cnmv.es"
+        "titulo": "BOE: Resoluciones Concursales del día",
+        "url_fuente": "https://www.boe.es"
     },
     "extranjeria": {
-        "titulo": "Arraigo para la Formación: Novedades",
-        "cuerpo": "Instrucciones actualizadas...",
-        "fecha": "08 de March, 2026",
+        "titulo": "Ministerio: Nuevas Instrucciones de Arraigo",
         "url_fuente": "https://extranjeros.inclusion.gob.es/"
     }
 }
