@@ -8,11 +8,11 @@
         "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
     },
     "mercantil": {
-        "titulo": "BOE: Resoluciones Concursales del día",
+        "titulo": "BOE: Resolución Concursal Directa",
         "url_fuente": "https://www.boe.es"
     },
     "extranjeria": {
-        "titulo": "Ministerio: Nuevas Instrucciones de Arraigo",
+        "titulo": "Ministerio: Instrucciones de Arraigo",
         "url_fuente": "https://extranjeros.inclusion.gob.es/"
     }
 }
