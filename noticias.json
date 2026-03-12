@@ -1,18 +1,18 @@
 {
     "familia": {
-        "titulo": "TS: Actualización sobre Custodia Compartida",
-        "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
+        "titulo": "Jurisprudencia TS: Modificación de Medidas",
+        "url_fuente": "https://www.noticiasjuridicas.com"
     },
     "penal": {
-        "titulo": "Jurisprudencia TS: Delitos Informáticos",
-        "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
+        "titulo": "Novedades Penal: Delitos Económicos",
+        "url_fuente": "https://www.noticiasjuridicas.com"
     },
     "mercantil": {
-        "titulo": "BOE: Última Resolución Oficial (PDF)",
+        "titulo": "Actualidad Mercantil y Concursal",
         "url_fuente": "https://www.boe.es"
     },
     "extranjeria": {
-        "titulo": "Ministerio: Instrucciones de Arraigo",
+        "titulo": "Nuevas Resoluciones de la Secretaría de Estado",
         "url_fuente": "https://extranjeros.inclusion.gob.es/"
     }
 }
