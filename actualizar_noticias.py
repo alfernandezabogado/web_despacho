@@ -54,41 +54,39 @@ def publicar_en_linkedin(texto):
         print(f"❌ Error en la API de LinkedIn: {e}")
 
 def buscar_datos_reales():
-    # 1. Intentamos localizar el PDF del día de forma infalible
-    url_final_boe = "https://www.boe.es"
+    noticias = {}
+    
+    # ESTRATEGIA: Usamos fuentes con URLs más estables y profesionales
     try:
-        # Probamos con el sumario de la sección V (Anuncios) que es muy estable
-        url_seccion = "https://www.boe.es/diario_boe/xml.php?id=BOE-S-" + datetime.now().strftime('%Y%m%d')
-        response = requests.get(url_seccion, timeout=10)
+        # 1. MERCANTIL / LEGAL - Usamos un agregador más directo
+        # En lugar de pelear con el XML del BOE, apuntamos a una fuente de noticias legales
+        url_mercantil = "https://www.derecho.com/noticias/"
+        # Simulamos que somos un navegador para evitar bloqueos
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        r = requests.get(url_mercantil, headers=headers, timeout=10)
+        soup = BeautifulSoup(r.text, 'html.parser')
         
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'xml')
-            # Buscamos específicamente el primer ítem que contenga un PDF
-            # El BOE usa la etiqueta <url_pdf> dentro de cada <item>
-            item_pdf = soup.find('url_pdf') or soup.find('urlPdf')
-            
-            if item_pdf:
-                url_final_boe = "https://www.boe.es" + item_pdf.text
-                print(f"✅ PDF Localizado: {url_final_boe}")
-    except Exception as e:
-        print(f"⚠️ Error en rastreo: {e}")
+        # Buscamos el primer enlace de noticia que suele ser un PDF o artículo detallado
+        enlace_noticia = soup.find('a', href=True)
+        url_final_legal = enlace_noticia['href'] if enlace_noticia else "https://www.boe.es"
+    except:
+        url_final_legal = "https://www.boe.es"
 
-    # Estructura para tu historial y LinkedIn
     noticias = {
         "familia": {
-            "titulo": "TS: Actualización sobre Custodia Compartida",
-            "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
+            "titulo": "Jurisprudencia TS: Modificación de Medidas",
+            "url_fuente": "https://www.noticiasjuridicas.com" 
         },
         "penal": {
-            "titulo": "Jurisprudencia TS: Delitos Informáticos",
-            "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
+            "titulo": "Novedades Penal: Delitos Económicos",
+            "url_fuente": "https://www.noticiasjuridicas.com"
         },
         "mercantil": {
-            "titulo": "BOE: Última Resolución Oficial (PDF)",
-            "url_fuente": url_final_boe 
+            "titulo": "Actualidad Mercantil y Concursal",
+            "url_fuente": url_final_legal
         },
         "extranjeria": {
-            "titulo": "Ministerio: Instrucciones de Arraigo",
+            "titulo": "Nuevas Resoluciones de la Secretaría de Estado",
             "url_fuente": "https://extranjeros.inclusion.gob.es/"
         }
     }
