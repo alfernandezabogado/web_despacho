@@ -1,18 +1,18 @@
 {
     "familia": {
-        "titulo": "TS: Jurisprudencia sobre Custodia Compartida",
+        "titulo": "TS: Jurisprudencia sobre Custodia Compartida (Actualizado)",
         "url": "https://www.poderjudicial.es/search/index.jsp"
     },
     "penal": {
-        "titulo": "TS: Jurisprudencia en Delitos Informáticos",
+        "titulo": "TS: Jurisprudencia en Delitos Informáticos (Actualizado)",
         "url": "https://www.poderjudicial.es/search/index.jsp"
     },
     "mercantil": {
-        "titulo": "BOE: Resoluciones Concursales Actualizadas",
-        "url": "https://www.boe.es"
+        "titulo": "BOE: Sumario de Resoluciones del 12/03/2026",
+        "url": "https://www.boe.es/diario_boe/pdf.php?id=BOE-S-20260312"
     },
     "extranjeria": {
-        "titulo": "Ministerio: Instrucciones de Arraigo",
+        "titulo": "Ministerio: Instrucciones de Arraigo y Residencia",
         "url": "https://extranjeros.inclusion.gob.es/"
     }
 }
