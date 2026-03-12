@@ -54,44 +54,44 @@ def publicar_en_linkedin(texto):
         print(f"❌ Error en la API de LinkedIn: {e}")
 
 def buscar_datos_reales():
-    noticias = {}
+    import feedparser # Necesitaremos añadir esta librería al .yml
     
-    # ESTRATEGIA: Usamos fuentes con URLs más estables y profesionales
+    noticias = {}
+    # 1. Fuente: Noticias Jurídicas (Muy fiable y actualizada)
     try:
-        # 1. MERCANTIL / LEGAL - Usamos un agregador más directo
-        # En lugar de pelear con el XML del BOE, apuntamos a una fuente de noticias legales
-        url_mercantil = "https://www.derecho.com/noticias/"
-        # Simulamos que somos un navegador para evitar bloqueos
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        r = requests.get(url_mercantil, headers=headers, timeout=10)
-        soup = BeautifulSoup(r.text, 'html.parser')
+        feed = feedparser.parse("https://noticias.juridicas.com/rss/")
+        # Extraemos las 4 noticias más recientes
+        entradas = feed.entries[:4]
         
-        # Buscamos el primer enlace de noticia que suele ser un PDF o artículo detallado
-        enlace_noticia = soup.find('a', href=True)
-        url_final_legal = enlace_noticia['href'] if enlace_noticia else "https://www.boe.es"
-    except:
-        url_final_legal = "https://www.boe.es"
-
-    noticias = {
-        "familia": {
-            "titulo": "Jurisprudencia TS: Modificación de Medidas",
-            "url_fuente": "https://www.noticiasjuridicas.com" 
-        },
-        "penal": {
-            "titulo": "Novedades Penal: Delitos Económicos",
-            "url_fuente": "https://www.noticiasjuridicas.com"
-        },
-        "mercantil": {
-            "titulo": "Actualidad Mercantil y Concursal",
-            "url_fuente": url_final_legal
-        },
-        "extranjeria": {
-            "titulo": "Nuevas Resoluciones de la Secretaría de Estado",
-            "url_fuente": "https://extranjeros.inclusion.gob.es/"
+        noticias = {
+            "familia": {
+                "titulo": entradas[0].title if len(entradas) > 0 else "Jurisprudencia: Actualización de Medidas",
+                "url_fuente": entradas[0].link if len(entradas) > 0 else "https://noticias.juridicas.com"
+            },
+            "penal": {
+                "titulo": entradas[1].title if len(entradas) > 1 else "Novedades Penal: Sentencias Recientes",
+                "url_fuente": entradas[1].link if len(entradas) > 1 else "https://noticias.juridicas.com"
+            },
+            "mercantil": {
+                "titulo": entradas[2].title if len(entradas) > 2 else "Actualidad Mercantil y Concursal",
+                "url_fuente": entradas[2].link if len(entradas) > 2 else "https://noticias.juridicas.com"
+            },
+            "extranjeria": {
+                "titulo": entradas[3].title if len(entradas) > 3 else "Nuevas Resoluciones Extranjería",
+                "url_fuente": entradas[3].link if len(entradas) > 3 else "https://noticias.juridicas.com"
+            }
         }
-    }
+    except:
+        # Si el RSS falla, mantenemos una estructura mínima para no romper el flujo
+        noticias = {
+            "familia": {"titulo": "Consultar novedades en Noticias Jurídicas", "url_fuente": "https://noticias.juridicas.com"},
+            "penal": {"titulo": "Consultar novedades en Noticias Jurídicas", "url_fuente": "https://noticias.juridicas.com"},
+            "mercantil": {"titulo": "Consultar novedades en Noticias Jurídicas", "url_fuente": "https://noticias.juridicas.com"},
+            "extranjeria": {"titulo": "Consultar novedades en Noticias Jurídicas", "url_fuente": "https://noticias.juridicas.com"}
+        }
     return noticias
-def ejecutar_flujo():
+    
+    def ejecutar_flujo():
     noticias = buscar_datos_reales()
     
     # 1. Actualizar archivos (Web y CSV para tu HDD de 1 TB)
