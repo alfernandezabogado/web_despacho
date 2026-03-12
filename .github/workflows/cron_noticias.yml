@@ -1,20 +1,26 @@
 name: Actualizar Noticias Jurídicas
 on:
   schedule:
-    - cron: '0 4 * * *' 
+    - cron: '0 4 * * *' # Se ejecuta a las 05:00 AM hora española
   workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4 # Actualizado a v4 para evitar avisos de Node.js
+
       - name: Configurar Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5 # Actualizado a v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
           
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests # Arregla el error ModuleNotFoundError: No module named 'requests'
+
       - name: Ejecutar Script
         run: python actualizar_noticias.py
         
@@ -24,6 +30,6 @@ jobs:
         run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
-          git add noticias.json
-          git commit -m "v51: Actualización automática" || echo "Sin cambios para subir"
+          git add noticias.json historico_noticias.csv # Añadido el histórico para asegurar el respaldo
+          git commit -m "v52: Actualización automática y respaldo histórico" || echo "Sin cambios para subir"
           git push origin main
