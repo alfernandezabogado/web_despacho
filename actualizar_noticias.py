@@ -54,27 +54,26 @@ def publicar_en_linkedin(texto):
         print(f"❌ Error en la API de LinkedIn: {e}")
 
 def buscar_datos_reales():
-    # 1. Generamos la fecha para el BOE
-    fecha_hoy_str = datetime.now().strftime('%Y%m%d')
-    
-    # URL por defecto si algo falla
+    # 1. Intentamos localizar el PDF del día de forma infalible
     url_final_boe = "https://www.boe.es"
-    
     try:
-        # Consultamos el sumario del día en formato XML
-        r = requests.get(f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{fecha_hoy_str}")
-        soup = BeautifulSoup(r.text, 'xml')
+        # Probamos con el sumario de la sección V (Anuncios) que es muy estable
+        url_seccion = "https://www.boe.es/diario_boe/xml.php?id=BOE-S-" + datetime.now().strftime('%Y%m%d')
+        response = requests.get(url_seccion, timeout=10)
         
-        # Buscamos el primer nodo de URL de PDF. 
-        # Usamos 'find' de forma que ignore los namespaces si existen.
-        pdf_node = soup.find('urlPdf') or soup.find('url_pdf')
-        
-        if pdf_node:
-            # Construimos la URL completa
-            url_final_boe = "https://www.boe.es" + pdf_node.text
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'xml')
+            # Buscamos específicamente el primer ítem que contenga un PDF
+            # El BOE usa la etiqueta <url_pdf> dentro de cada <item>
+            item_pdf = soup.find('url_pdf') or soup.find('urlPdf')
+            
+            if item_pdf:
+                url_final_boe = "https://www.boe.es" + item_pdf.text
+                print(f"✅ PDF Localizado: {url_final_boe}")
     except Exception as e:
-        print(f"Error rastreando PDF: {e}")
+        print(f"⚠️ Error en rastreo: {e}")
 
+    # Estructura para tu historial y LinkedIn
     noticias = {
         "familia": {
             "titulo": "TS: Actualización sobre Custodia Compartida",
@@ -85,7 +84,7 @@ def buscar_datos_reales():
             "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
         },
         "mercantil": {
-            "titulo": "BOE: Resolución Concursal Directa (PDF)",
+            "titulo": "BOE: Última Resolución Oficial (PDF)",
             "url_fuente": url_final_boe 
         },
         "extranjeria": {
