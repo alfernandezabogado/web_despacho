@@ -54,20 +54,26 @@ def publicar_en_linkedin(texto):
         print(f"❌ Error en la API de LinkedIn: {e}")
 
 def buscar_datos_reales():
-    fecha_hoy = datetime.now().strftime("%Y/%m/%d")
+    # 1. Generamos la fecha para el BOE
+    fecha_hoy_str = datetime.now().strftime('%Y%m%d')
+    
+    # URL por defecto si algo falla
     url_final_boe = "https://www.boe.es"
     
     try:
-        # Vamos directamente al sumario del día de hoy
-        url_sumario = f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{datetime.now().strftime('%Y%m%d')}"
-        r = requests.get(url_sumario)
-        # Buscamos el primer PDF disponible en el sumario
+        # Consultamos el sumario del día en formato XML
+        r = requests.get(f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{fecha_hoy_str}")
         soup = BeautifulSoup(r.text, 'xml')
-        item = soup.find('urlPdf')
-        if item:
-            url_final_boe = "https://www.boe.es" + item.text
-    except:
-        url_final_boe = "https://www.boe.es"
+        
+        # Buscamos el primer nodo de URL de PDF. 
+        # Usamos 'find' de forma que ignore los namespaces si existen.
+        pdf_node = soup.find('urlPdf') or soup.find('url_pdf')
+        
+        if pdf_node:
+            # Construimos la URL completa
+            url_final_boe = "https://www.boe.es" + pdf_node.text
+    except Exception as e:
+        print(f"Error rastreando PDF: {e}")
 
     noticias = {
         "familia": {
@@ -79,7 +85,7 @@ def buscar_datos_reales():
             "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
         },
         "mercantil": {
-            "titulo": "BOE: Resolución Concursal Directa",
+            "titulo": "BOE: Resolución Concursal Directa (PDF)",
             "url_fuente": url_final_boe 
         },
         "extranjeria": {
