@@ -54,23 +54,39 @@ def publicar_en_linkedin(texto):
         print(f"❌ Error en la API de LinkedIn: {e}")
 
 def buscar_datos_reales():
-    fecha_hoy = datetime.now().strftime("%d/%m/%Y")
-    # Estructura de datos para Familia, Penal, Mercantil y Extranjería
+    noticias = {}
+    
+    # --- 1. EXTRACCIÓN DEL BOE (BUSCANDO EL PDF REAL) ---
+    try:
+        url_boe_diario = "https://www.boe.es/diario_boe/"
+        r = requests.get(url_boe_diario)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        
+        # Buscamos la primera resolución relevante (ej. sección Mercantil)
+        # Este código busca el primer enlace que termina en .pdf dentro del sumario
+        primer_pdf = soup.find('a', href=True, title="Archivo PDF")
+        if primer_pdf:
+            url_final_boe = "https://www.boe.es" + primer_pdf['href']
+        else:
+            url_final_boe = "https://www.boe.es"
+    except:
+        url_final_boe = "https://www.boe.es"
+
     noticias = {
         "familia": {
             "titulo": "TS: Actualización sobre Custodia Compartida",
-            "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
+            "url_fuente": "https://www.poderjudicial.es/search/index.jsp" 
         },
         "penal": {
             "titulo": "Jurisprudencia TS: Delitos Informáticos",
             "url_fuente": "https://www.poderjudicial.es/search/index.jsp"
         },
         "mercantil": {
-            "titulo": "BOE: Resoluciones Concursales del día",
-            "url_fuente": "https://www.boe.es"
+            "titulo": "BOE: Resolución Concursal Directa",
+            "url_fuente": url_final_boe  # <--- AQUÍ YA IRÁ EL ENLACE AL PDF
         },
         "extranjeria": {
-            "titulo": "Ministerio: Nuevas Instrucciones de Arraigo",
+            "titulo": "Ministerio: Instrucciones de Arraigo",
             "url_fuente": "https://extranjeros.inclusion.gob.es/"
         }
     }
