@@ -1,37 +1,49 @@
 import os
 import requests
-from bs4 import BeautifulSoup
 import json
 import csv
-import smtplib
+import feedparser
 from datetime import datetime
-from email.message import EmailMessage
 
-# --- CONFIGURACIÓN DE SEGURIDAD ---
-EMAIL_EMISOR = "despachofernandezsanz@gmail.com"
-EMAIL_RECEPTOR = "despachofernandezsanz@gmail.com"
-EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-# Necesitarás crear este Secret en GitHub para que funcione LinkedIn
+# --- CONFIGURACIÓN ---
 LINKEDIN_TOKEN = os.environ.get('LINKEDIN_TOKEN') 
 LINKEDIN_USER_ID = os.environ.get('LINKEDIN_USER_ID') 
 
-def publicar_en_linkedin(texto):
-    """Publica un post en LinkedIn solo de Lunes a Viernes."""
-    # 0=Lunes, 4=Viernes. Si es > 4 (Sábado/Domingo), no publica.
-    if datetime.now().weekday() > 4:
-        print("📅 Fin de semana: Omitiendo publicación en LinkedIn.")
-        return
-
-    if not LINKEDIN_TOKEN or not LINKEDIN_USER_ID:
-        print("⚠️ LinkedIn: Falta Token o ID en Secrets. Post cancelado.")
-        return
-
-    url = "https://api.linkedin.com/v2/ugcPosts"
-    headers = {
-        "Authorization": f"Bearer {LINKEDIN_TOKEN}",
-        "X-Restli-Protocol-Version": "2.0.0",
-        "Content-Type": "application/json"
+def buscar_datos_reales():
+    noticias = {}
+    # Buscamos términos específicos para obtener resultados reales
+    temas = {
+        "familia": "sentencia+custodia+compartida+España",
+        "penal": "sentencia+Tribunal+Supremo+penal",
+        "mercantil": "BOE+resolucion+concursal",
+        "extranjeria": "reforma+reglamento+extranjeria+España"
     }
+
+    for cat, query in temas.items():
+        try:
+            # Google News nos da el enlace directo sin bloqueos
+            url_rss = f"https://news.google.com/rss/search?q={query}&hl=es&gl=ES&ceid=ES:es"
+            feed = feedparser.parse(url_rss)
+            if feed.entries:
+                # Cogemos la noticia más reciente
+                noticias[cat] = {
+                    "titulo": feed.entries[0].title,
+                    "url_fuente": feed.entries[0].link
+                }
+            else:
+                raise Exception("Sin noticias")
+        except:
+            noticias[cat] = {
+                "titulo": f"Actualidad {cat.capitalize()}: Ver novedades",
+                "url_fuente": "https://noticias.juridicas.com"
+            }
+    return noticias
+
+def publicar_en_linkedin(texto):
+    if datetime.now().weekday() > 4 or not LINKEDIN_TOKEN:
+        return
+    url = "https://api.linkedin.com/v2/ugcPosts"
+    headers = {"Authorization": f"Bearer {LINKEDIN_TOKEN}", "Content-Type": "application/json"}
     post_data = {
         "author": f"urn:li:person:{LINKEDIN_USER_ID}",
         "lifecycleState": "PUBLISHED",
@@ -43,62 +55,16 @@ def publicar_en_linkedin(texto):
         },
         "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
     }
-    
-    try:
-        response = requests.post(url, headers=headers, json=post_data)
-        if response.status_code == 201:
-            print("🚀 Post publicado con éxito en LinkedIn.")
-        else:
-            print(f"❌ Error LinkedIn: {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"❌ Error en la API de LinkedIn: {e}")
+    requests.post(url, headers=headers, json=post_data)
 
-def buscar_datos_reales():
-    import feedparser
-
-def buscar_datos_reales():
-    # Diccionario para guardar lo que encontremos
-    noticias = {}
-    
-    # Definimos qué buscar para cada categoría
-    temas = {
-        "familia": "sentencia+custodia+compartida+España",
-        "penal": "sentencia+Tribunal+Supremo+penal",
-        "mercantil": "BOE+concursal+reestructuracion",
-        "extranjeria": "reforma+reglamento+extranjeria+España"
-    }
-
-    for cat, busqueda in temas.items():
-        try:
-            # Consultamos las noticias más recientes en Google News España
-            rss_url = f"https://news.google.com/rss/search?q={busqueda}&hl=es&gl=ES&ceid=ES:es"
-            feed = feedparser.parse(rss_url)
-            
-            if feed.entries:
-                # Cogemos la noticia más reciente de hoy
-                noticia_top = feed.entries[0]
-                noticias[cat] = {
-                    "titulo": noticia_top.title,
-                    "url_fuente": noticia_top.link
-                }
-            else:
-                raise Exception("Sin noticias")
-        except:
-            # Si falla el rastreo, mantenemos un enlace oficial como respaldo
-            noticias[cat] = {
-                "titulo": f"Actualidad {cat.capitalize()}: Consultar novedades",
-                "url_fuente": "https://noticias.juridicas.com"
-            }
-            
-    return noticias
-    
-    def ejecutar_flujo():
+def ejecutar_flujo():
     noticias = buscar_datos_reales()
     
-    # 1. Actualizar archivos (Web y CSV para tu HDD de 1 TB)
+    # Guardar para la web
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(noticias, f, ensure_ascii=False, indent=4)
 
+    # Guardar para tu HDD de 1 TB
     archivo_historial = 'historico_noticias.csv'
     existe = os.path.isfile(archivo_historial)
     with open(archivo_historial, 'a', newline='', encoding='utf-8') as f:
@@ -108,13 +74,11 @@ def buscar_datos_reales():
         for cat, data in noticias.items():
             writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), cat.upper(), data['titulo'], data['url_fuente']])
 
-    # 2. Preparar texto para LinkedIn
-    resumen = f"⚖️ BOLETÍN JURÍDICO DIARIO - {datetime.now().strftime('%d/%m/%Y')}\n\n"
+    # Preparar LinkedIn
+    resumen = f"⚖️ BOLETÍN JURÍDICO - {datetime.now().strftime('%d/%m/%Y')}\n\n"
     for cat, data in noticias.items():
         resumen += f"🔹 {cat.upper()}: {data['titulo']}\n"
-    resumen += "\n🔗 Más detalles actualizados en mi web."
-
-    # 3. Publicar (Si es laborable)
+    
     publicar_en_linkedin(resumen)
 
 if __name__ == "__main__":
