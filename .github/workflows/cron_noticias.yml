@@ -19,8 +19,8 @@ jobs:
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install requests # Arregla el error ModuleNotFoundError: No module named 'requests'
-
+          pip install requests beautifulsoup4 lxml
+          
       - name: Ejecutar Script
         run: python actualizar_noticias.py
         
