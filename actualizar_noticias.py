@@ -54,41 +54,42 @@ def publicar_en_linkedin(texto):
         print(f"❌ Error en la API de LinkedIn: {e}")
 
 def buscar_datos_reales():
-    import feedparser # Necesitaremos añadir esta librería al .yml
-    
+    import feedparser
+
+def buscar_datos_reales():
+    # Diccionario para guardar lo que encontremos
     noticias = {}
-    # 1. Fuente: Noticias Jurídicas (Muy fiable y actualizada)
-    try:
-        feed = feedparser.parse("https://noticias.juridicas.com/rss/")
-        # Extraemos las 4 noticias más recientes
-        entradas = feed.entries[:4]
-        
-        noticias = {
-            "familia": {
-                "titulo": entradas[0].title if len(entradas) > 0 else "Jurisprudencia: Actualización de Medidas",
-                "url_fuente": entradas[0].link if len(entradas) > 0 else "https://noticias.juridicas.com"
-            },
-            "penal": {
-                "titulo": entradas[1].title if len(entradas) > 1 else "Novedades Penal: Sentencias Recientes",
-                "url_fuente": entradas[1].link if len(entradas) > 1 else "https://noticias.juridicas.com"
-            },
-            "mercantil": {
-                "titulo": entradas[2].title if len(entradas) > 2 else "Actualidad Mercantil y Concursal",
-                "url_fuente": entradas[2].link if len(entradas) > 2 else "https://noticias.juridicas.com"
-            },
-            "extranjeria": {
-                "titulo": entradas[3].title if len(entradas) > 3 else "Nuevas Resoluciones Extranjería",
-                "url_fuente": entradas[3].link if len(entradas) > 3 else "https://noticias.juridicas.com"
+    
+    # Definimos qué buscar para cada categoría
+    temas = {
+        "familia": "sentencia+custodia+compartida+España",
+        "penal": "sentencia+Tribunal+Supremo+penal",
+        "mercantil": "BOE+concursal+reestructuracion",
+        "extranjeria": "reforma+reglamento+extranjeria+España"
+    }
+
+    for cat, busqueda in temas.items():
+        try:
+            # Consultamos las noticias más recientes en Google News España
+            rss_url = f"https://news.google.com/rss/search?q={busqueda}&hl=es&gl=ES&ceid=ES:es"
+            feed = feedparser.parse(rss_url)
+            
+            if feed.entries:
+                # Cogemos la noticia más reciente de hoy
+                noticia_top = feed.entries[0]
+                noticias[cat] = {
+                    "titulo": noticia_top.title,
+                    "url_fuente": noticia_top.link
+                }
+            else:
+                raise Exception("Sin noticias")
+        except:
+            # Si falla el rastreo, mantenemos un enlace oficial como respaldo
+            noticias[cat] = {
+                "titulo": f"Actualidad {cat.capitalize()}: Consultar novedades",
+                "url_fuente": "https://noticias.juridicas.com"
             }
-        }
-    except:
-        # Si el RSS falla, mantenemos una estructura mínima para no romper el flujo
-        noticias = {
-            "familia": {"titulo": "Consultar novedades en Noticias Jurídicas", "url_fuente": "https://noticias.juridicas.com"},
-            "penal": {"titulo": "Consultar novedades en Noticias Jurídicas", "url_fuente": "https://noticias.juridicas.com"},
-            "mercantil": {"titulo": "Consultar novedades en Noticias Jurídicas", "url_fuente": "https://noticias.juridicas.com"},
-            "extranjeria": {"titulo": "Consultar novedades en Noticias Jurídicas", "url_fuente": "https://noticias.juridicas.com"}
-        }
+            
     return noticias
     
     def ejecutar_flujo():
