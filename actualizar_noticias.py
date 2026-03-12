@@ -3,12 +3,12 @@ import json
 import csv
 from datetime import datetime
 
-def ejecutar_flujo_rescate():
-    # Fecha para las URLs y títulos
+def actualizar_fuentes_juridicas():
     hoy = datetime.now().strftime('%d/%m/%Y')
     hoy_url = datetime.now().strftime('%Y%m%d')
-
-    # Diccionario con nombres exactos para tu WEB y LinkedIn
+    
+    # Estructura lista para recibir datos reales (RSS o Scraping)
+    # Ahora mismo son enlaces institucionales, pero el formato es el correcto
     noticias = {
         "familia": {
             "titulo": f"TS: Jurisprudencia Familia - {hoy}",
@@ -20,6 +20,7 @@ def ejecutar_flujo_rescate():
         },
         "mercantil": {
             "titulo": f"BOE: Sumario de Resoluciones - {hoy}",
+            # OJO: Esto falla si no hay BOE (festivos/finde)
             "url": f"https://www.boe.es/diario_boe/pdf.php?id=BOE-S-{hoy_url}"
         },
         "extranjeria": {
@@ -28,19 +29,29 @@ def ejecutar_flujo_rescate():
         }
     }
 
-    # 1. Actualizar JSON (Adiós al 'undefined' en la web)
-    with open('noticias.json', 'w', encoding='utf-8') as f:
-        json.dump(noticias, f, ensure_ascii=False, indent=4)
+    try:
+        # 1. Guardar JSON para la WEB
+        with open('noticias.json', 'w', encoding='utf-8') as f:
+            json.dump(noticias, f, ensure_ascii=False, indent=4)
+        print("✅ JSON actualizado correctamente.")
 
-    # 2. Actualizar CSV (Para tu copia de seguridad de 1 TB)
-    archivo_historial = 'historico_noticias.csv'
-    existe = os.path.isfile(archivo_historial)
-    with open(archivo_historial, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        if not existe:
-            writer.writerow(['Fecha', 'Categoria', 'Titulo', 'URL'])
-        for cat, data in noticias.items():
-            writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), cat.upper(), data['titulo'], data['url']])
+        # 2. Guardar Histórico CSV
+        archivo_historial = 'historico_noticias.csv'
+        existe = os.path.isfile(archivo_historial)
+        
+        with open(archivo_historial, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            if not existe:
+                writer.writerow(['Fecha', 'Categoria', 'Titulo', 'URL'])
+            
+            fecha_registro = datetime.now().strftime("%Y-%m-%d %H:%M")
+            for cat, data in noticias.items():
+                writer.writerow([fecha_registro, cat.upper(), data['titulo'], data['url']])
+        
+        print("✅ Histórico CSV actualizado correctamente.")
+
+    except Exception as e:
+        print(f"❌ Error durante la ejecución: {e}")
 
 if __name__ == "__main__":
-    ejecutar_flujo_rescate()
+    actualizar_fuentes_juridicas()
