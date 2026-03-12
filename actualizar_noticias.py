@@ -1,38 +1,53 @@
 import os
 import requests
+from bs4 import BeautifulSoup
 import json
 import csv
-import feedparser
 from datetime import datetime
 
 # --- CONFIGURACIÓN ---
-LINKEDIN_TOKEN = os.environ.get('LINKEDIN_TOKEN') 
-LINKEDIN_USER_ID = os.environ.get('LINKEDIN_USER_ID') 
+LINKEDIN_TOKEN = os.environ.get('LINKEDIN_TOKEN')
+LINKEDIN_USER_ID = os.environ.get('LINKEDIN_USER_ID')
 
 def buscar_datos_reales():
-    # Usamos títulos fijos pero con URLs que ahora sí rotarán
-    # (Asegúrate de que esta indentación sea exacta: 4 espacios)
+    noticias = {}
+    fecha_hoy_xml = datetime.now().strftime('%Y%m%d')
+    
+    # 1. Intento de extracción del BOE (Sección Mercantil)
+    url_boe = "https://www.boe.es"
+    try:
+        # Intentamos obtener el PDF del sumario del día
+        r_boe = requests.get(f"https://www.boe.es/diario_boe/xml.php?id=BOE-S-{fecha_hoy_xml}", timeout=10)
+        soup_boe = BeautifulSoup(r_boe.text, 'xml')
+        pdf_node = soup_boe.find('url_pdf') or soup_boe.find('urlPdf')
+        if pdf_node:
+            url_boe = "https://www.boe.es" + pdf_node.text
+    except:
+        pass
+
+    # 2. Estructura unificada (Usamos 'url' para evitar KeyErrors)
     noticias = {
         "familia": {
-            "titulo": "TS: Jurisprudencia sobre Modificación de Medidas",
-            "url": "https://noticias.juridicas.com"
+            "titulo": "TS: Jurisprudencia sobre Custodia Compartida",
+            "url": "https://www.poderjudicial.es/search/index.jsp"
         },
         "penal": {
-            "titulo": "Novedades Penal: Delitos Económicos",
-            "url": "https://noticias.juridicas.com"
+            "titulo": "TS: Jurisprudencia en Delitos Informáticos",
+            "url": "https://www.poderjudicial.es/search/index.jsp"
         },
         "mercantil": {
-            "titulo": "BOE: Sección de Resoluciones Concursales",
-            "url": "https://www.boe.es/diario_boe/xml.php?id=BOE-S-20260312" 
+            "titulo": "BOE: Resoluciones Concursales Actualizadas",
+            "url": url_boe
         },
         "extranjeria": {
-            "titulo": "Nuevas Instrucciones de la Secretaría de Estado",
+            "titulo": "Ministerio: Instrucciones de Arraigo",
             "url": "https://extranjeros.inclusion.gob.es/"
         }
     }
     return noticias
+
 def publicar_en_linkedin(texto):
-    if datetime.now().weekday() > 4 or not LINKEDIN_TOKEN:
+    if not LINKEDIN_TOKEN or datetime.now().weekday() > 4:
         return
     url = "https://api.linkedin.com/v2/ugcPosts"
     headers = {"Authorization": f"Bearer {LINKEDIN_TOKEN}", "Content-Type": "application/json"}
@@ -52,7 +67,7 @@ def publicar_en_linkedin(texto):
 def ejecutar_flujo():
     noticias = buscar_datos_reales()
     
-    # Guardar para la web
+    # Guardar para la Web (Sin 'undefined')
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(noticias, f, ensure_ascii=False, indent=4)
 
@@ -64,7 +79,8 @@ def ejecutar_flujo():
         if not existe:
             writer.writerow(['Fecha', 'Categoria', 'Titulo', 'URL'])
         for cat, data in noticias.items():
-            writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), cat.upper(), data['titulo'], data['url_fuente']])
+            # Usamos 'url' que es la clave que hemos definido arriba
+            writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), cat.upper(), data['titulo'], data['url']])
 
     # Preparar LinkedIn
     resumen = f"⚖️ BOLETÍN JURÍDICO - {datetime.now().strftime('%d/%m/%Y')}\n\n"
