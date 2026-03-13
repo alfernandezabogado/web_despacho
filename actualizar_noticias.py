@@ -51,6 +51,7 @@ def publicar_en_linkedin(noticia):
     requests.post(url_api, headers=headers, json=payload)
 
 def buscar_datos_ia():
+    # Búsquedas específicas para evitar que se repitan noticias entre categorías
     conceptos = {
         "familia": "sentencia+custodia+compartida+España", 
         "penal": "delito+codigo+penal+España",
@@ -68,13 +69,17 @@ def buscar_datos_ia():
             for entry in feed.entries:
                 if entry.link not in urls_usadas:
                     titulo = entry.title
-                    # Extraemos el resumen y quitamos HTML
+                    # Extraemos el resumen original y limpiamos etiquetas HTML
                     resumen_sucio = entry.summary.split('<')[0] if 'summary' in entry else ""
                     
-                    # --- FILTRO ANTI-REPETICIÓN ---
-                    # Si el resumen es igual al título o muy corto, generamos una frase profesional
-                    if len(resumen_sucio) < 40 or titulo[:30] in resumen_sucio:
-                        resumen_final = f"Nueva actualización relevante en el ámbito de Derecho {cat.capitalize()}. Esta resolución marca un punto de interés para el despacho y nuestros clientes por su impacto en la normativa actual."
+                    # --- SOLUCIÓN A LA DUPLICIDAD EN LA WEB ---
+                    # Si el resumen es igual al título o muy corto, generamos un texto nuevo
+                    # Esto evita que aparezca el mismo texto en negrita y en pequeño
+                    if len(resumen_sucio) < 50 or titulo[:40] in resumen_sucio:
+                        resumen_final = (
+                            f"Analizamos las últimas novedades legislativas y jurisprudenciales en materia de Derecho {cat.capitalize()}. "
+                            f"Esta actualización es fundamental para entender la evolución normativa actual en España sobre este asunto."
+                        )
                     else:
                         resumen_final = resumen_sucio[:350]
 
@@ -86,20 +91,25 @@ def buscar_datos_ia():
                     urls_usadas.add(entry.link)
                     break
         except:
-            noticias[cat] = {"titulo": f"Actualidad {cat}", "resumen": "Consulta las últimas novedades del sector en el enlace adjunto.", "url": "https://noticias.juridicas.com"}
+            noticias[cat] = {"titulo": f"Actualidad {cat}", "resumen": "Novedades del sector jurídico.", "url": "https://noticias.juridicas.com"}
     return noticias
 
 def ejecutar_flujo():
+    print("🤖 Iniciando actualización de noticias...")
     noticias = buscar_datos_ia()
     
+    # 1. Guardar el JSON para la web (ahora con textos diferenciados)
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(noticias, f, ensure_ascii=False, indent=4)
-    print("✅ Web actualizada con contenidos únicos.")
+    print("✅ Web actualizada (noticias.json).")
 
+    # 2. Publicar en LinkedIn solo si es laborable
     if es_dia_laborable():
         cat_elegida = random.choice(list(noticias.keys()))
+        print(f"🚀 Publicando en LinkedIn categoría: {cat_elegida}")
         publicar_en_linkedin(noticias[cat_elegida])
-        print(f"🚀 Publicado en LinkedIn: {cat_elegida}")
+    else:
+        print("😴 Hoy es festivo o fin de semana. No se publica en LinkedIn.")
 
 if __name__ == "__main__":
     ejecutar_flujo()
