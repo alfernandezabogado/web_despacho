@@ -67,16 +67,16 @@ def buscar_datos_ia():
             
             for entry in feed.entries:
                 if entry.link not in urls_usadas:
-                    # Limpiamos el texto
                     titulo = entry.title
-                    resumen_original = entry.summary.split('<')[0] if 'summary' in entry else ""
+                    # Extraemos el resumen y quitamos HTML
+                    resumen_sucio = entry.summary.split('<')[0] if 'summary' in entry else ""
                     
-                    # CORRECCIÓN DE REPETICIÓN:
-                    # Si el resumen es casi igual al título o muy corto, creamos uno nuevo
-                    if len(resumen_original) < 30 or resumen_original[:50] in titulo:
-                        resumen_final = f"Análisis detallado sobre las últimas novedades en materia de derecho {cat}. Consulte los detalles de esta resolución en el enlace inferior."
+                    # --- FILTRO ANTI-REPETICIÓN ---
+                    # Si el resumen es igual al título o muy corto, generamos una frase profesional
+                    if len(resumen_sucio) < 40 or titulo[:30] in resumen_sucio:
+                        resumen_final = f"Nueva actualización relevante en el ámbito de Derecho {cat.capitalize()}. Esta resolución marca un punto de interés para el despacho y nuestros clientes por su impacto en la normativa actual."
                     else:
-                        resumen_final = resumen_original[:350]
+                        resumen_final = resumen_sucio[:350]
 
                     noticias[cat] = {
                         "titulo": titulo,
@@ -86,17 +86,16 @@ def buscar_datos_ia():
                     urls_usadas.add(entry.link)
                     break
         except:
-            noticias[cat] = {"titulo": f"Actualidad {cat}", "resumen": "Novedades del sector.", "url": "https://noticias.juridicas.com"}
+            noticias[cat] = {"titulo": f"Actualidad {cat}", "resumen": "Consulta las últimas novedades del sector en el enlace adjunto.", "url": "https://noticias.juridicas.com"}
     return noticias
+
 def ejecutar_flujo():
     noticias = buscar_datos_ia()
     
-    # 1. Actualizar JSON para la web (con contenido diferenciado)
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(noticias, f, ensure_ascii=False, indent=4)
-    print("✅ Web actualizada con contenidos únicos por categoría.")
+    print("✅ Web actualizada con contenidos únicos.")
 
-    # 2. Publicar en LinkedIn
     if es_dia_laborable():
         cat_elegida = random.choice(list(noticias.keys()))
         publicar_en_linkedin(noticias[cat_elegida])
