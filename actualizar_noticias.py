@@ -1,6 +1,5 @@
 import os
 import json
-import csv
 import feedparser
 import requests
 import random
@@ -8,7 +7,7 @@ from datetime import datetime
 
 def es_dia_laborable():
     ahora = datetime.now()
-    if ahora.weekday() > 4:
+    if ahora.weekday() > 4: # Sábado y Domingo
         return False
     festivos_2026 = ["2026-01-01", "2026-01-06", "2026-04-03", "2026-05-01", "2026-10-12", "2026-12-25"]
     if ahora.strftime("%Y-%m-%d") in festivos_2026:
@@ -17,8 +16,7 @@ def es_dia_laborable():
 
 def publicar_en_linkedin(noticia):
     token = os.getenv('LINKEDIN_TOKEN')
-    # AQUÍ ESTÁ TU ID REAL
-    mi_id_urn = "urn:li:person:5mzvpwns6H" 
+    mi_id_urn = "urn:li:person:5mzvpwns6H" # Tu ID ya verificado
     
     url_api = "https://api.linkedin.com/v2/ugcPosts"
     headers = {
@@ -32,7 +30,7 @@ def publicar_en_linkedin(noticia):
         f"⚖️ {noticia['titulo']}\n\n"
         f"📝 {noticia['resumen']}\n\n"
         f"🔗 Noticia completa: {noticia['url']}\n\n"
-        "#Derecho #Abogacia #Actualidad #Justicia"
+        "#Derecho #Abogacia #Actualidad #Justicia #FernandezSanz"
     )
 
     payload = {
@@ -53,10 +51,6 @@ def publicar_en_linkedin(noticia):
     else:
         print(f"❌ Error al publicar: {res.status_code} - {res.text}")
 
-def limpiar_resumen(texto):
-    if not texto: return "Sin descripción."
-    return texto.split('<')[0] if "<" in texto else texto
-
 def buscar_datos_ia():
     conceptos = {
         "familia": "sentencia+custodia+compartida+España", 
@@ -72,27 +66,28 @@ def buscar_datos_ia():
                 entry = random.choice(feed.entries[:5])
                 noticias[cat] = {
                     "titulo": entry.title,
-                    "resumen": limpiar_resumen(entry.summary if 'summary' in entry else entry.title)[:160] + "...",
+                    "resumen": entry.summary[:160] + "..." if 'summary' in entry else "Novedades relevantes en la materia.",
                     "url": entry.link
                 }
         except:
-            noticias[cat] = {"titulo": f"Novedad en Derecho {cat}", "resumen": "Revisión de la actualidad semanal.", "url": "https://noticias.juridicas.com"}
+            noticias[cat] = {"titulo": f"Actualidad en Derecho {cat}", "resumen": "Novedades del sector.", "url": "https://noticias.juridicas.com"}
     return noticias
 
 def ejecutar_flujo():
+    print("🤖 Iniciando proceso diario...")
     noticias = buscar_datos_ia()
     
-    # 1. Guardamos en el JSON para la web
+    # Guardar para la web
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(noticias, f, ensure_ascii=False, indent=4)
-    
-    # 2. Publicamos en LinkedIn si es laborable
+    print("✅ Archivo noticias.json actualizado.")
+
     if es_dia_laborable():
         cat_elegida = random.choice(list(noticias.keys()))
         print(f"🔄 Publicando categoría '{cat_elegida}' en LinkedIn...")
         publicar_en_linkedin(noticias[cat_elegida])
     else:
-        print("😴 Fin de semana o festivo: No se publica en redes.")
+        print("😴 Fin de semana o festivo: No se publica en LinkedIn.")
 
 if __name__ == "__main__":
     ejecutar_flujo()
