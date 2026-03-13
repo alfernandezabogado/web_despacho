@@ -1,6 +1,5 @@
 import os
 import json
-import csv
 import feedparser
 import requests
 import random
@@ -8,20 +7,15 @@ from datetime import datetime
 
 def es_dia_laborable():
     ahora = datetime.now()
-    # 0=Lunes, 4=Viernes. 5 y 6 son Sábado y Domingo.
     if ahora.weekday() > 4:
         return False
-    
-    # Lista de festivos nacionales 2026
     festivos_2026 = ["2026-01-01", "2026-01-06", "2026-04-03", "2026-05-01", "2026-10-12", "2026-12-25"]
     if ahora.strftime("%Y-%m-%d") in festivos_2026:
         return False
-        
     return True
 
 def publicar_en_linkedin(noticia):
     token = os.getenv('LINKEDIN_TOKEN')
-    # Tu ID de miembro verificado en el paso anterior
     mi_id_urn = "urn:li:person:5mzvpwns6H" 
     
     url_api = "https://api.linkedin.com/v2/ugcPosts"
@@ -31,12 +25,17 @@ def publicar_en_linkedin(noticia):
         "Content-Type": "application/json"
     }
     
+    # Hemos ampliado el texto para que la publicación se vea "llena" y profesional
+    # Añadimos una introducción y llamadas a la acción
     texto_post = (
-        f"📢 ACTUALIDAD JURÍDICA\n\n"
-        f"⚖️ {noticia['titulo']}\n\n"
-        f"📝 {noticia['resumen']}\n\n"
-        f"🔗 Noticia completa: {noticia['url']}\n\n"
-        "#Derecho #Abogacia #Actualidad #Justicia"
+        f"📌 ACTUALIDAD Y NOVEDADES JURÍDICAS\n\n"
+        f"⚖️ {noticia['titulo'].upper()}\n\n"
+        f"Comparto esta información relevante de última hora que afecta al sector:\n\n"
+        f"\" {noticia['resumen']} \"\n\n"
+        f"🔗 Pueden leer el análisis completo y los detalles en el siguiente enlace:\n"
+        f"{noticia['url']}\n\n"
+        "Espero que esta actualización les resulte de utilidad. Saludos.\n\n"
+        "#Derecho #Abogacia #ActualidadJuridica #Justicia #España"
     )
 
     payload = {
@@ -45,83 +44,62 @@ def publicar_en_linkedin(noticia):
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {
                 "shareCommentary": {"text": texto_post},
-                "shareMediaCategory": "NONE"
+                "shareMediaCategory": "ARTICLE", # Cambiado de NONE a ARTICLE para forzar previsualización
+                "media": [
+                    {
+                        "status": "READY",
+                        "originalUrl": noticia['url']
+                    }
+                ]
             }
         },
         "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
     }
     
-    try:
-        response = requests.post(url_api, headers=headers, json=payload)
-        if response.status_code == 201:
-            print("🚀 ¡Noticia publicada con éxito en LinkedIn!")
-        else:
-            print(f"❌ Error al publicar: {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"❌ Error de conexión: {e}")
-
-def limpiar_resumen(texto):
-    if not texto:
-        return "Sin descripción disponible."
-    if "<" in texto:
-        return texto.split('<')[0]
-    return texto
+    res = requests.post(url_api, headers=headers, json=payload)
+    if res.status_code == 201:
+        print("🚀 ¡Post enriquecido publicado con éxito!")
+    else:
+        # Si el sitio original bloquea la previsualización de ARTICLE, reintentamos como texto simple
+        print("⚠️ Reintentando con formato de texto simple...")
+        payload["specificContent"]["com.linkedin.ugc.ShareContent"]["shareMediaCategory"] = "NONE"
+        del payload["specificContent"]["com.linkedin.ugc.ShareContent"]["media"]
+        requests.post(url_api, headers=headers, json=payload)
 
 def buscar_datos_ia():
     conceptos = {
-        "familia": "sentencia+custodia+compartida+España",
+        "familia": "sentencia+custodia+compartida+España", 
         "penal": "Tribunal+Supremo+penal+España",
-        "mercantil": "BOE+resolucion+concursal",
-        "extranjeria": "reforma+reglamento+extranjeria+España"
+        "civil": "novedad+juridica+España"
     }
-    
     noticias = {}
     for cat, busqueda in conceptos.items():
         try:
             url_rss = f"https://news.google.com/rss/search?q={busqueda}&hl=es&gl=ES&ceid=ES:es"
             feed = feedparser.parse(url_rss)
-            if len(feed.entries) > 0:
-                limite = min(len(feed.entries), 3)
-                entry = random.choice(feed.entries[:limite])
-                resumen_sucio = entry.summary if 'summary' in entry else entry.title
-                resumen_ia = limpiar_resumen(resumen_sucio)
+            if feed.entries:
+                entry = random.choice(feed.entries[:5])
+                # Limpiamos mejor el resumen para evitar el "..." tan corto
+                resumen = entry.summary.split('<')[0] if 'summary' in entry else entry.title
+                if len(resumen) < 50: resumen = entry.title
+                
                 noticias[cat] = {
                     "titulo": entry.title,
-                    "resumen": resumen_ia[:150] + "...",
+                    "resumen": resumen[:400], # Aumentamos el límite de texto
                     "url": entry.link
                 }
         except:
-            noticias[cat] = {"titulo": f"Actualidad {cat}", "resumen": "Consulta las novedades en el enlace.", "url": "https://noticias.juridicas.com"}
+            noticias[cat] = {"titulo": f"Novedad en {cat}", "resumen": "Actualización del ordenamiento jurídico.", "url": "https://noticias.juridicas.com"}
     return noticias
 
 def ejecutar_flujo():
-    # 1. Obtenemos las noticias
     noticias = buscar_datos_ia()
-    hoy_str = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    # 2. Guardar para la WEB (noticias.json)
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(noticias, f, ensure_ascii=False, indent=4)
-
-    # 3. Guardar histórico para tu HDD de 1 TB
-    archivo_historial = 'historico_noticias.csv'
-    existe = os.path.isfile(archivo_historial)
-    with open(archivo_historial, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        if not existe:
-            writer.writerow(['Fecha', 'Categoria', 'Titulo', 'URL', 'Resumen'])
-        for cat, data in noticias.items():
-            writer.writerow([hoy_str, cat.upper(), data['titulo'], data['url'], data['resumen']])
     
-    print(f"✅ Web e Historial actualizados ({hoy_str})")
-
-    # 4. Publicar en LinkedIn solo si es laborable
     if es_dia_laborable():
         cat_elegida = random.choice(list(noticias.keys()))
-        print(f"🚀 Publicando categoría: {cat_elegida}")
         publicar_en_linkedin(noticias[cat_elegida])
-    else:
-        print("😴 Hoy no es laborable. No se publica en LinkedIn.")
 
 if __name__ == "__main__":
     ejecutar_flujo()
