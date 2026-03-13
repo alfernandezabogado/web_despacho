@@ -20,48 +20,18 @@ def es_dia_laborable():
     return True
 
 def publicar_en_linkedin(noticia):
-    # Recuperamos el token de los secretos de GitHub (Paso 2)
     token = os.getenv('LINKEDIN_TOKEN')
     
-    # Tu ID de miembro obtenido en el "Token Generator"
-    # IMPORTANTE: Sustituye esto por tu URN real (ej: urn:li:person:abc123XYZ)
-    mi_id_urn = "AQVOo0165Bhv0bn5nUuM2TRlG9JwHeUFjuxG8PHkKPap8GYn1h0SoD0A3nVVMf3MdLkAKxKyNZJlBkMJPJst8jRa-1Z4LDT2Cd93VFqhsFy1C0vZmVl5JNDkPTA__KTRK-arTvJGQkJJYuTr4PgzCZ5vawJ_TykjLYLcBYTfuDqoCTJE1drJFjwZd7UKPkG1iVS0sY6rzpgXNy42NCoXjWmqZWdYO8zxvaGNS3DVa18wOE40w7ALeZXx6d3pdzCskA6QeOaDJ46i1uIfeEGgC53ZzLf9_hyaEQoCcCBrEIioUvqvPRAffEqvz5aIanjz6VgKr4AP8-r887zeFv8bem9GsZL8tA" 
+    # Este pequeño bloque nos dirá quién eres
+    url_id = "https://api.linkedin.com/v2/userinfo"
+    headers = {"Authorization": f"Bearer {token}"}
     
-    url_api = "https://api.linkedin.com/v2/ugcPosts"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "X-Restli-Protocol-Version": "2.0.0",
-        "Content-Type": "application/json"
-    }
-    
-    texto_post = (
-        f"📢 ACTUALIDAD JURÍDICA\n\n"
-        f"⚖️ {noticia['titulo']}\n\n"
-        f"📝 {noticia['resumen']}\n\n"
-        f"🔗 Noticia completa: {noticia['url']}\n\n"
-        "#Derecho #Abogacia #ActualidadJuridica"
-    )
-
-    payload = {
-        "author": mi_id_urn,
-        "lifecycleState": "PUBLISHED",
-        "specificContent": {
-            "com.linkedin.ugc.ShareContent": {
-                "shareCommentary": {"text": texto_post},
-                "shareMediaCategory": "NONE"
-            }
-        },
-        "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
-    }
-    
-    try:
-        response = requests.post(url_api, headers=headers, json=payload)
-        if response.status_code == 201:
-            print("✅ ¡Publicado en LinkedIn con éxito!")
-        else:
-            print(f"❌ Error al publicar: {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"❌ Error de conexión: {e}")
+    res = requests.get(url_id, headers=headers)
+    if res.status_code == 200:
+        datos = res.json()
+        print(f"🎯 TU MEMBER ID ES: urn:li:person:{datos['sub']}")
+    else:
+        print(f"❌ Error al obtener ID: {res.text}")
 # --- CONFIGURACIÓN ---
 
 def limpiar_resumen(texto):
