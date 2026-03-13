@@ -1,36 +1,17 @@
-import random # Añadimos esto arriba
-
-def buscar_datos_ia():
-    # ... (tu código anterior) ...
-    
-    for cat, busqueda in conceptos.items():
-        try:
-            url_rss = f"https://news.google.com/rss/search?q={busqueda}&hl=es&gl=ES&ceid=ES:es"
-            feed = feedparser.parse(url_rss)
-            
-            if len(feed.entries) > 1:
-                # En lugar de coger siempre la 0 (la primera), 
-                # cogemos una al azar de entre las 3 primeras.
-                entry = random.choice(feed.entries[:3]) 
-                
-                noticias[cat] = {
-                    "titulo": entry.title,
-                    "resumen": limpiar_resumen(entry.summary)[:150] + "...",
-                    "url": entry.link
-                }
-    # ... (resto del código) ...
 import os
 import json
 import csv
 import feedparser
 import requests
+import random
 from datetime import datetime
 
 # --- CONFIGURACIÓN ---
-# Si quieres usar IA de verdad, necesitarías una API KEY de Hugging Face (gratis)
-# Por ahora lo haremos con lógica de "Smart Extraction" para que no falle en GitHub
+
 def limpiar_resumen(texto):
     # Limpia el HTML que a veces trae el RSS de Google
+    if not texto:
+        return "Sin descripción disponible."
     if "<" in texto:
         return texto.split('<')[0]
     return texto
@@ -50,16 +31,21 @@ def buscar_datos_ia():
             url_rss = f"https://news.google.com/rss/search?q={busqueda}&hl=es&gl=ES&ceid=ES:es"
             feed = feedparser.parse(url_rss)
             
-            if feed.entries:
-                entry = feed.entries[0]
-                # Aquí simulamos el "summarizer" extrayendo la parte mollar
-                resumen_ia = limpiar_resumen(entry.summary if 'summary' in entry else entry.title)
+            # Aplicamos aleatoriedad sobre los 3 primeros resultados para variar el historial
+            if len(feed.entries) > 0:
+                limite = min(len(feed.entries), 3)
+                entry = random.choice(feed.entries[:limite])
+                
+                resumen_sucio = entry.summary if 'summary' in entry else entry.title
+                resumen_ia = limpiar_resumen(resumen_sucio)
                 
                 noticias[cat] = {
                     "titulo": entry.title,
-                    "resumen": resumen_ia[:150] + "...", # El resumen para la web
+                    "resumen": resumen_ia[:150] + "...",
                     "url": entry.link
                 }
+            else:
+                raise Exception("No hay entradas")
         except Exception as e:
             noticias[cat] = {
                 "titulo": f"Actualidad {cat.capitalize()}",
@@ -72,11 +58,11 @@ def ejecutar_flujo():
     noticias = buscar_datos_ia()
     hoy = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    # 1. Guardar para la WEB (con el nuevo campo 'resumen')
+    # 1. Guardar para la WEB (noticias.json)
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(noticias, f, ensure_ascii=False, indent=4)
 
-    # 2. Guardar en tu HDD de 1 TB (CSV)
+    # 2. Guardar en el histórico (historico_noticias.csv)
     archivo_historial = 'historico_noticias.csv'
     existe = os.path.isfile(archivo_historial)
     with open(archivo_historial, 'a', newline='', encoding='utf-8') as f:
@@ -85,6 +71,8 @@ def ejecutar_flujo():
             writer.writerow(['Fecha', 'Categoria', 'Titulo', 'URL', 'Resumen'])
         for cat, data in noticias.items():
             writer.writerow([hoy, cat.upper(), data['titulo'], data['url'], data['resumen']])
+    
+    print(f"✅ Proceso finalizado. Historial actualizado a las {hoy}")
 
 if __name__ == "__main__":
     ejecutar_flujo()
