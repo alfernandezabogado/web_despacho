@@ -81,14 +81,16 @@ def buscar_datos_ia():
     return noticias
 
 def ejecutar_flujo():
+    # 1. Obtenemos las noticias frescas
     noticias = buscar_datos_ia()
-    hoy = datetime.now().strftime("%Y-%m-%d %H:%M")
+    hoy_dt = datetime.now()
+    hoy_str = hoy_dt.strftime("%Y-%m-%d %H:%M")
 
-    # 1. Guardar para la WEB (noticias.json)
+    # 2. Guardar para la WEB (noticias.json)
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(noticias, f, ensure_ascii=False, indent=4)
 
-    # 2. Guardar en el histórico (historico_noticias.csv)
+    # 3. Guardar en tu HDD de 1 TB (historico_noticias.csv)
     archivo_historial = 'historico_noticias.csv'
     existe = os.path.isfile(archivo_historial)
     with open(archivo_historial, 'a', newline='', encoding='utf-8') as f:
@@ -96,9 +98,20 @@ def ejecutar_flujo():
         if not existe:
             writer.writerow(['Fecha', 'Categoria', 'Titulo', 'URL', 'Resumen'])
         for cat, data in noticias.items():
-            writer.writerow([hoy, cat.upper(), data['titulo'], data['url'], data['resumen']])
+            writer.writerow([hoy_str, cat.upper(), data['titulo'], data['url'], data['resumen']])
     
-    print(f"✅ Proceso finalizado. Historial actualizado a las {hoy}")
+    print(f"✅ Historial y Web actualizados ({hoy_str})")
+
+    # 4. PUBLICACIÓN EN LINKEDIN (Lunes a Viernes, no festivos)
+    if es_dia_laborable():
+        # Elegimos una categoría al azar para el post de hoy
+        cat_elegida = random.choice(list(noticias.keys()))
+        noticia_para_post = noticias[cat_elegida]
+        
+        print(f"🚀 Iniciando publicación en LinkedIn (Categoría: {cat_elegida})...")
+        publicar_en_linkedin(noticia_para_post)
+    else:
+        print("😴 Hoy es festivo o fin de semana. No se publica en LinkedIn.")
 
 if __name__ == "__main__":
     ejecutar_flujo()
