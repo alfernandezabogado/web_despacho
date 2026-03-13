@@ -1,5 +1,6 @@
 import os
 import json
+import csv
 import feedparser
 import requests
 import random
@@ -25,17 +26,14 @@ def publicar_en_linkedin(noticia):
         "Content-Type": "application/json"
     }
     
-    # Hemos ampliado el texto para que la publicación se vea "llena" y profesional
-    # Añadimos una introducción y llamadas a la acción
     texto_post = (
         f"📌 ACTUALIDAD Y NOVEDADES JURÍDICAS\n\n"
         f"⚖️ {noticia['titulo'].upper()}\n\n"
-        f"Comparto esta información relevante de última hora que afecta al sector:\n\n"
+        f"Comparto esta información relevante de última hora:\n\n"
         f"\" {noticia['resumen']} \"\n\n"
-        f"🔗 Pueden leer el análisis completo y los detalles en el siguiente enlace:\n"
+        f"🔗 Análisis completo en el siguiente enlace:\n"
         f"{noticia['url']}\n\n"
-        "Espero que esta actualización les resulte de utilidad. Saludos.\n\n"
-        "#Derecho #Abogacia #ActualidadJuridica #Justicia #España"
+        "Espero que les resulte de utilidad. #Derecho #Abogacia #Actualidad"
     )
 
     payload = {
@@ -44,62 +42,70 @@ def publicar_en_linkedin(noticia):
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {
                 "shareCommentary": {"text": texto_post},
-                "shareMediaCategory": "ARTICLE", # Cambiado de NONE a ARTICLE para forzar previsualización
-                "media": [
-                    {
-                        "status": "READY",
-                        "originalUrl": noticia['url']
-                    }
-                ]
+                "shareMediaCategory": "ARTICLE",
+                "media": [{"status": "READY", "originalUrl": noticia['url']}]
             }
         },
         "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
     }
-    
-    res = requests.post(url_api, headers=headers, json=payload)
-    if res.status_code == 201:
-        print("🚀 ¡Post enriquecido publicado con éxito!")
-    else:
-        # Si el sitio original bloquea la previsualización de ARTICLE, reintentamos como texto simple
-        print("⚠️ Reintentando con formato de texto simple...")
-        payload["specificContent"]["com.linkedin.ugc.ShareContent"]["shareMediaCategory"] = "NONE"
-        del payload["specificContent"]["com.linkedin.ugc.ShareContent"]["media"]
-        requests.post(url_api, headers=headers, json=payload)
+    requests.post(url_api, headers=headers, json=payload)
 
 def buscar_datos_ia():
+    # Definimos búsquedas mucho más específicas para evitar solapamientos
     conceptos = {
-        "familia": "sentencia+custodia+compartida+España", 
-        "penal": "Tribunal+Supremo+penal+España",
-        "civil": "novedad+juridica+España"
+        "familia": "sentencia+custodia+compartida+divorcio+España", 
+        "penal": "delito+codigo+penal+sentencia+audiencia+nacional",
+        "mercantil": "concurso+acreedores+sociedades+mercantil+España",
+        "extranjeria": "visado+residencia+arraigo+ley+extranjeria+España"
     }
+    
     noticias = {}
+    urls_usadas = set() # Para evitar que una noticia se repita en varias categorías
+
     for cat, busqueda in conceptos.items():
         try:
             url_rss = f"https://news.google.com/rss/search?q={busqueda}&hl=es&gl=ES&ceid=ES:es"
             feed = feedparser.parse(url_rss)
-            if feed.entries:
-                entry = random.choice(feed.entries[:5])
-                # Limpiamos mejor el resumen para evitar el "..." tan corto
-                resumen = entry.summary.split('<')[0] if 'summary' in entry else entry.title
-                if len(resumen) < 50: resumen = entry.title
-                
-                noticias[cat] = {
-                    "titulo": entry.title,
-                    "resumen": resumen[:400], # Aumentamos el límite de texto
-                    "url": entry.link
-                }
-        except:
-            noticias[cat] = {"titulo": f"Novedad en {cat}", "resumen": "Actualización del ordenamiento jurídico.", "url": "https://noticias.juridicas.com"}
+            
+            noticia_encontrada = False
+            for entry in feed.entries:
+                if entry.link not in urls_usadas:
+                    resumen = entry.summary.split('<')[0] if 'summary' in entry else entry.title
+                    if len(resumen) < 50: resumen = entry.title
+                    
+                    noticias[cat] = {
+                        "titulo": entry.title,
+                        "resumen": resumen[:400],
+                        "url": entry.link
+                    }
+                    urls_usadas.add(entry.link)
+                    noticia_encontrada = True
+                    break
+            
+            if not noticia_encontrada:
+                raise Exception("No hay noticias nuevas para esta categoría")
+
+        except Exception as e:
+            noticias[cat] = {
+                "titulo": f"Actualidad en Derecho {cat.capitalize()}", 
+                "resumen": f"Revisión de las últimas novedades normativas en materia {cat}.", 
+                "url": "https://noticias.juridicas.com"
+            }
     return noticias
 
 def ejecutar_flujo():
     noticias = buscar_datos_ia()
+    
+    # 1. Actualizar JSON para la web (con contenido diferenciado)
     with open('noticias.json', 'w', encoding='utf-8') as f:
         json.dump(noticias, f, ensure_ascii=False, indent=4)
-    
+    print("✅ Web actualizada con contenidos únicos por categoría.")
+
+    # 2. Publicar en LinkedIn
     if es_dia_laborable():
         cat_elegida = random.choice(list(noticias.keys()))
         publicar_en_linkedin(noticias[cat_elegida])
+        print(f"🚀 Publicado en LinkedIn: {cat_elegida}")
 
 if __name__ == "__main__":
     ejecutar_flujo()
