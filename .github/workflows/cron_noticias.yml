@@ -22,6 +22,8 @@ jobs:
           pip install requests beautifulsoup4 lxml feedparser
           
       - name: Ejecutar Script
+        env:
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
         run: python actualizar_noticias.py
         
       - name: Subir cambios
