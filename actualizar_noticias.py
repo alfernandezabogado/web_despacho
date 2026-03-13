@@ -1,3 +1,24 @@
+import random # Añadimos esto arriba
+
+def buscar_datos_ia():
+    # ... (tu código anterior) ...
+    
+    for cat, busqueda in conceptos.items():
+        try:
+            url_rss = f"https://news.google.com/rss/search?q={busqueda}&hl=es&gl=ES&ceid=ES:es"
+            feed = feedparser.parse(url_rss)
+            
+            if len(feed.entries) > 1:
+                # En lugar de coger siempre la 0 (la primera), 
+                # cogemos una al azar de entre las 3 primeras.
+                entry = random.choice(feed.entries[:3]) 
+                
+                noticias[cat] = {
+                    "titulo": entry.title,
+                    "resumen": limpiar_resumen(entry.summary)[:150] + "...",
+                    "url": entry.link
+                }
+    # ... (resto del código) ...
 import os
 import json
 import csv
