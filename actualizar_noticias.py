@@ -51,48 +51,43 @@ def publicar_en_linkedin(noticia):
     requests.post(url_api, headers=headers, json=payload)
 
 def buscar_datos_ia():
-    # Definimos búsquedas mucho más específicas para evitar solapamientos
     conceptos = {
-        "familia": "sentencia+custodia+compartida+divorcio+España", 
-        "penal": "delito+codigo+penal+sentencia+audiencia+nacional",
-        "mercantil": "concurso+acreedores+sociedades+mercantil+España",
-        "extranjeria": "visado+residencia+arraigo+ley+extranjeria+España"
+        "familia": "sentencia+custodia+compartida+España", 
+        "penal": "delito+codigo+penal+España",
+        "mercantil": "concurso+acreedores+España",
+        "extranjeria": "ley+extranjeria+arraigo+España"
     }
-    
     noticias = {}
-    urls_usadas = set() # Para evitar que una noticia se repita en varias categorías
+    urls_usadas = set()
 
     for cat, busqueda in conceptos.items():
         try:
             url_rss = f"https://news.google.com/rss/search?q={busqueda}&hl=es&gl=ES&ceid=ES:es"
             feed = feedparser.parse(url_rss)
             
-            noticia_encontrada = False
             for entry in feed.entries:
                 if entry.link not in urls_usadas:
-                    resumen = entry.summary.split('<')[0] if 'summary' in entry else entry.title
-                    if len(resumen) < 50: resumen = entry.title
+                    # Limpiamos el texto
+                    titulo = entry.title
+                    resumen_original = entry.summary.split('<')[0] if 'summary' in entry else ""
                     
+                    # CORRECCIÓN DE REPETICIÓN:
+                    # Si el resumen es casi igual al título o muy corto, creamos uno nuevo
+                    if len(resumen_original) < 30 or resumen_original[:50] in titulo:
+                        resumen_final = f"Análisis detallado sobre las últimas novedades en materia de derecho {cat}. Consulte los detalles de esta resolución en el enlace inferior."
+                    else:
+                        resumen_final = resumen_original[:350]
+
                     noticias[cat] = {
-                        "titulo": entry.title,
-                        "resumen": resumen[:400],
+                        "titulo": titulo,
+                        "resumen": resumen_final,
                         "url": entry.link
                     }
                     urls_usadas.add(entry.link)
-                    noticia_encontrada = True
                     break
-            
-            if not noticia_encontrada:
-                raise Exception("No hay noticias nuevas para esta categoría")
-
-        except Exception as e:
-            noticias[cat] = {
-                "titulo": f"Actualidad en Derecho {cat.capitalize()}", 
-                "resumen": f"Revisión de las últimas novedades normativas en materia {cat}.", 
-                "url": "https://noticias.juridicas.com"
-            }
+        except:
+            noticias[cat] = {"titulo": f"Actualidad {cat}", "resumen": "Novedades del sector.", "url": "https://noticias.juridicas.com"}
     return noticias
-
 def ejecutar_flujo():
     noticias = buscar_datos_ia()
     
