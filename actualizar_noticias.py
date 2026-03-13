@@ -6,6 +6,32 @@ import requests
 import random
 from datetime import datetime
 
+def es_dia_laborable():
+    ahora = datetime.now()
+    # 0=Lunes, 4=Viernes. 5 y 6 son Sábado y Domingo.
+    if ahora.weekday() > 4:
+        return False
+    
+    # Lista de festivos nacionales 2026 (puedes ampliarla)
+    festivos_2026 = ["2026-01-01", "2026-01-06", "2026-04-03", "2026-05-01", "2026-10-12", "2026-12-25"]
+    if ahora.strftime("%Y-%m-%d") in festivos_2026:
+        return False
+        
+    return True
+
+def publicar_en_linkedin(noticia):
+    # Aquí irá la conexión con la API de LinkedIn que configuraremos en el siguiente paso
+    texto_post = (
+        f"📢 ACTUALIDAD JURÍDICA\n\n"
+        f"⚖️ {noticia['titulo']}\n\n"
+        f"📝 {noticia['resumen']}\n\n"
+        f"🔗 Noticia completa: {noticia['url']}\n\n"
+        "#Derecho #Abogacia #Actualidad"
+    )
+    print("Simulando envío a LinkedIn...")
+    print(texto_post)
+    # Aquí iría el requests.post a LinkedIn
+
 # --- CONFIGURACIÓN ---
 
 def limpiar_resumen(texto):
