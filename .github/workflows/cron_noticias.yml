@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip' # Esto ayuda a que no olvide las librerías entre ejecuciones
+          # Hemos quitado la línea de caché para evitar el error de "file not found"
           
       - name: Instalar dependencias
         run: |
@@ -25,7 +25,6 @@ jobs:
       - name: Ejecutar Script
         env:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
-        # Añadimos -m para asegurar que use las librerías del entorno actual
         run: python actualizar_noticias.py
         
       - name: Subir cambios
@@ -35,5 +34,5 @@ jobs:
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
           git add noticias.json historico_noticias.csv
-          git commit -m "v53: Corrección de dependencias y ejecución robusta" || echo "Sin cambios"
+          git commit -m "v54: Corrección de flujo de ejecución" || echo "Sin cambios"
           git push origin main
