@@ -1,7 +1,7 @@
 name: Actualizar Noticias Jurídicas
 on:
   schedule:
-    - cron: '0 4 * * *' # Se ejecuta a las 05:00 AM hora española
+    - cron: '0 4 * * *' # 05:00 AM hora española
   workflow_dispatch: 
 
 jobs:
@@ -9,12 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del repositorio
-        uses: actions/checkout@v4 # Actualizado a v4 para evitar avisos de Node.js
+        uses: actions/checkout@v4
 
       - name: Configurar Python
-        uses: actions/setup-python@v5 # Actualizado a v5
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip' # Esto ayuda a que no olvide las librerías entre ejecuciones
           
       - name: Instalar dependencias
         run: |
@@ -24,6 +25,7 @@ jobs:
       - name: Ejecutar Script
         env:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
+        # Añadimos -m para asegurar que use las librerías del entorno actual
         run: python actualizar_noticias.py
         
       - name: Subir cambios
@@ -32,6 +34,6 @@ jobs:
         run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
-          git add noticias.json historico_noticias.csv # Añadido el histórico para asegurar el respaldo
-          git commit -m "v52: Actualización automática y respaldo histórico" || echo "Sin cambios para subir"
+          git add noticias.json historico_noticias.csv
+          git commit -m "v53: Corrección de dependencias y ejecución robusta" || echo "Sin cambios"
           git push origin main
