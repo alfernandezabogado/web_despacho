@@ -603,42 +603,70 @@
         <h2 class="text-3xl font-serif text-center mb-4 text-slate-900">Nuestra Metodología Legal</h2>
         <p class="text-center text-slate-600 mb-12 max-w-2xl mx-auto">Un proceso transparente y riguroso diseñado para proteger sus intereses en cada etapa.</p>
         
-        <div class="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-4 gap-8 pb-8 md:pb-0 hide-scrollbar">
+        <div id="step-carousel" class="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-4 gap-8 pb-8 md:pb-0 hide-scrollbar scroll-smooth">
             
-            <div class="min-w-[85%] sm:min-w-[60%] md:min-w-full snap-center text-center px-4">
-                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold border-2 border-amber-500">1</div>
+            <div class="min-w-full md:min-w-0 snap-center flex flex-col items-center text-center px-6">
+                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4 text-2xl font-bold border-2 border-amber-500 shrink-0">1</div>
                 <h3 class="font-bold mb-2">Primera Consulta</h3>
                 <p class="text-sm text-slate-600">Analizamos los detalles de su situación y evaluamos la viabilidad jurídica real.</p>
             </div>
 
-            <div class="min-w-[85%] sm:min-w-[60%] md:min-w-full snap-center text-center px-4">
-                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold border-2 border-amber-500">2</div>
+            <div class="min-w-full md:min-w-0 snap-center flex flex-col items-center text-center px-6">
+                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4 text-2xl font-bold border-2 border-amber-500 shrink-0">2</div>
                 <h3 class="font-bold mb-2">Presupuesto Cerrado</h3>
                 <p class="text-sm text-slate-600">Entregamos una hoja de encargo con honorarios claros, por escrito y sin sorpresas.</p>
             </div>
 
-            <div class="min-w-[85%] sm:min-w-[60%] md:min-w-full snap-center text-center px-4">
-                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold border-2 border-amber-500">3</div>
+            <div class="min-w-full md:min-w-0 snap-center flex flex-col items-center text-center px-6">
+                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4 text-2xl font-bold border-2 border-amber-500 shrink-0">3</div>
                 <h3 class="font-bold mb-2">Estrategia Legal</h3>
                 <p class="text-sm text-slate-600">Diseñamos la mejor defensa o vía de negociación adaptada a sus objetivos.</p>
             </div>
 
-            <div class="min-w-[85%] sm:min-w-[60%] md:min-w-full snap-center text-center px-4">
-                <div class="w-16 h-16 bg-amber-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">4</div>
+            <div class="min-w-full md:min-w-0 snap-center flex flex-col items-center text-center px-6">
+                <div class="w-16 h-16 bg-amber-500 text-white rounded-full flex items-center justify-center mb-4 text-2xl font-bold shadow-lg shrink-0">4</div>
                 <h3 class="font-bold mb-2">Resolución</h3>
                 <p class="text-sm text-slate-600">Actuamos con firmeza en tribunales o mediante acuerdos estratégicos.</p>
             </div>
         </div>
 
-        <div class="flex justify-center gap-2 mt-4 md:hidden">
-            <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
-            <div class="w-2 h-2 bg-slate-200 rounded-full"></div>
-            <div class="w-2 h-2 bg-slate-200 rounded-full"></div>
-            <div class="w-2 h-2 bg-slate-200 rounded-full"></div>
+        <div id="carousel-dots" class="flex justify-center gap-3 mt-4 md:hidden">
+            <div class="w-2.5 h-2.5 bg-amber-500 rounded-full transition-colors duration-300"></div>
+            <div class="w-2.5 h-2.5 bg-slate-200 rounded-full transition-colors duration-300"></div>
+            <div class="w-2.5 h-2.5 bg-slate-200 rounded-full transition-colors duration-300"></div>
+            <div class="w-2.5 h-2.5 bg-slate-200 rounded-full transition-colors duration-300"></div>
         </div>
     </div>
 </section>
 
+<style>
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Aseguramos que el contenedor de los pasos no tenga paddings extraños que desvíen el centro */
+    #step-carousel {
+        scroll-padding: 0 50%;
+    }
+</style>
+
+<script>
+    const carousel = document.getElementById('step-carousel');
+    const dots = document.querySelectorAll('#carousel-dots div');
+
+    carousel.addEventListener('scroll', () => {
+        const width = carousel.offsetWidth;
+        const index = Math.round(carousel.scrollLeft / width);
+        
+        dots.forEach((dot, i) => {
+            if (i === index) {
+                dot.classList.replace('bg-slate-200', 'bg-amber-500');
+            } else {
+                dot.classList.replace('bg-amber-500', 'bg-slate-200');
+            }
+        });
+    });
+</script>
+        
 <style>
     /* Oculta la barra de scroll pero permite el deslizamiento */
     .hide-scrollbar::-webkit-scrollbar {
