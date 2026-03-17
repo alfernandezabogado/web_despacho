@@ -1,115 +1,101 @@
-import os
-import json
-import csv
 import feedparser
 import requests
+import json
+import os
+import csv
 import random
 from datetime import datetime
 
-def es_dia_laborable():
-    ahora = datetime.now()
-    if ahora.weekday() > 4:
+# --- CONFIGURACIÓN ---
+CATEGORIAS = {
+    "FAMILIA": "https://news.google.com/rss/search?q=sentencia+custodia+compartida+España+when:24h&hl=es&gl=ES&ceid=ES:es",
+    "PENAL": "https://news.google.com/rss/search?q=derecho+penal+España+actualidad+when:24h&hl=es&gl=ES&ceid=ES:es",
+    "MERCANTIL": "https://news.google.com/rss/search?q=concurso+acreedores+España+noticias+when:24h&hl=es&gl=ES&ceid=ES:es",
+    "EXTRANJERIA": "https://news.google.com/rss/search?q=reforma+reglamento+extranjería+España+when:24h&hl=es&gl=ES&ceid=ES:es"
+}
+
+HISTORICO_FILE = 'historico_noticias.csv'
+JSON_FILE = 'noticias.json'
+
+def noticia_ya_publicada(url_nueva):
+    """Consulta el historial para evitar repetir la misma noticia."""
+    if not os.path.exists(HISTORICO_FILE):
         return False
-    festivos_2026 = ["2026-01-01", "2026-01-06", "2026-04-03", "2026-05-01", "2026-10-12", "2026-12-25"]
-    if ahora.strftime("%Y-%m-%d") in festivos_2026:
-        return False
-    return True
+    with open(HISTORICO_FILE, mode='r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        for fila in reader:
+            if len(fila) > 3 and url_nueva == fila[3]:
+                return True
+    return False
 
-def publicar_en_linkedin(noticia):
-    token = os.getenv('LINKEDIN_TOKEN')
-    mi_id_urn = "urn:li:person:5mzvpwns6H" 
+def guardar_en_historico(categoria, titulo, url):
+    """Registra la noticia con timestamp para auditoría."""
+    ahora = datetime.now().strftime("%Y-%m-%d %H:%M")
+    file_exists = os.path.isfile(HISTORICO_FILE)
+    with open(HISTORICO_FILE, mode='a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow([ahora, categoria, titulo, url])
+
+def buscar_noticias():
+    """Busca noticias frescas y filtra las que ya existen en el CSV."""
+    noticias_del_dia = {}
     
-    url_api = "https://api.linkedin.com/v2/ugcPosts"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "X-Restli-Protocol-Version": "2.0.0",
-        "Content-Type": "application/json"
-    }
-    
-    texto_post = (
-        f"📌 ACTUALIDAD Y NOVEDADES JURÍDICAS\n\n"
-        f"⚖️ {noticia['titulo'].upper()}\n\n"
-        f"Comparto esta información relevante de última hora:\n\n"
-        f"\" {noticia['resumen']} \"\n\n"
-        f"🔗 Análisis completo en el siguiente enlace:\n"
-        f"{noticia['url']}\n\n"
-        "Espero que les resulte de utilidad. #Derecho #Abogacia #Actualidad"
-    )
+    for cat, url_rss in CATEGORIAS.items():
+        feed = feedparser.parse(url_rss)
+        noticia_encontrada = False
+        
+        for entrada in feed.entries:
+            if not noticia_ya_publicada(entrada.link):
+                # Limpiamos el título (quitamos la fuente al final)
+                titulo_limpio = entrada.title.split(' - ')[0]
+                
+                noticias_del_dia[cat] = {
+                    "titulo": titulo_limpio,
+                    "resumen": f"Últimas novedades legislativas y jurisprudenciales en materia de {cat.capitalize()}. Esta información es clave para entender la evolución normativa actual en España.",
+                    "url": entrada.link
+                }
+                # Guardamos en el CSV nada más encontrarla para "bloquearla"
+                guardar_en_historico(cat, titulo_limpio, entrada.link)
+                noticia_encontrada = True
+                break
+        
+        # Si no hay nada nuevo en las últimas 24h, mantenemos un mensaje de cortesía
+        if not noticia_encontrada:
+            print(f"⚠️ No hay noticias nuevas para {cat}. Se mantendrá la última conocida.")
 
-    payload = {
-        "author": mi_id_urn,
-        "lifecycleState": "PUBLISHED",
-        "specificContent": {
-            "com.linkedin.ugc.ShareContent": {
-                "shareCommentary": {"text": texto_post},
-                "shareMediaCategory": "ARTICLE",
-                "media": [{"status": "READY", "originalUrl": noticia['url']}]
-            }
-        },
-        "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
-    }
-    requests.post(url_api, headers=headers, json=payload)
-
-def buscar_datos_ia():
-    # Búsquedas específicas para evitar que se repitan noticias entre categorías
-    conceptos = {
-        "familia": "sentencia+custodia+compartida+España", 
-        "penal": "delito+codigo+penal+España",
-        "mercantil": "concurso+acreedores+España",
-        "extranjeria": "ley+extranjeria+arraigo+España"
-    }
-    noticias = {}
-    urls_usadas = set()
-
-    for cat, busqueda in conceptos.items():
-        try:
-            url_rss = f"https://news.google.com/rss/search?q={busqueda}&hl=es&gl=ES&ceid=ES:es"
-            feed = feedparser.parse(url_rss)
-            
-            for entry in feed.entries:
-                if entry.link not in urls_usadas:
-                    titulo = entry.title
-                    # Extraemos el resumen original y limpiamos etiquetas HTML
-                    resumen_sucio = entry.summary.split('<')[0] if 'summary' in entry else ""
-                    
-                    # --- SOLUCIÓN A LA DUPLICIDAD EN LA WEB ---
-                    # Si el resumen es igual al título o muy corto, generamos un texto nuevo
-                    # Esto evita que aparezca el mismo texto en negrita y en pequeño
-                    if len(resumen_sucio) < 50 or titulo[:40] in resumen_sucio:
-                        resumen_final = (
-                            f"Analizamos las últimas novedades legislativas y jurisprudenciales en materia de Derecho {cat.capitalize()}. "
-                            f"Esta actualización es fundamental para entender la evolución normativa actual en España sobre este asunto."
-                        )
-                    else:
-                        resumen_final = resumen_sucio[:350]
-
-                    noticias[cat] = {
-                        "titulo": titulo,
-                        "resumen": resumen_final,
-                        "url": entry.link
-                    }
-                    urls_usadas.add(entry.link)
-                    break
-        except:
-            noticias[cat] = {"titulo": f"Actualidad {cat}", "resumen": "Novedades del sector jurídico.", "url": "https://noticias.juridicas.com"}
-    return noticias
+    return noticias_del_dia
 
 def ejecutar_flujo():
     print("🤖 Iniciando actualización de noticias...")
-    noticias = buscar_datos_ia()
     
-    # 1. Guardar el JSON para la web (ahora con textos diferenciados)
-    with open('noticias.json', 'w', encoding='utf-8') as f:
-        json.dump(noticias, f, ensure_ascii=False, indent=4)
-    print("✅ Web actualizada (noticias.json).")
+    hoy = datetime.now().strftime("%Y-%m-%d")
+    
+    # 1. Verificar si ya se actualizó hoy (Lógica de Congelación Diaria)
+    if os.path.exists(JSON_FILE):
+        with open(JSON_FILE, 'r', encoding='utf-8') as f:
+            try:
+                datos_actuales = json.load(f)
+                if datos_actuales.get("fecha_actualizacion") == hoy:
+                    print(f"🛑 Noticias ya actualizadas hoy ({hoy}). Finalizando para evitar duplicados.")
+                    return
+            except json.JSONDecodeError:
+                pass
 
-    # 2. Publicar en LinkedIn solo si es laborable
-    if es_dia_laborable():
-        cat_elegida = random.choice(list(noticias.keys()))
-        print(f"🚀 Publicando en LinkedIn categoría: {cat_elegida}")
-        publicar_en_linkedin(noticias[cat_elegida])
-    else:
-        print("😴 Hoy es festivo o fin de semana. No se publica en LinkedIn.")
+    # 2. Buscar nuevas noticias
+    nuevas_noticias = buscar_noticias()
+    
+    if nuevas_noticias:
+        nuevas_noticias["fecha_actualizacion"] = hoy
+        
+        # 3. Guardar el JSON para la web (compatible con v51)
+        with open(JSON_FILE, 'w', encoding='utf-8') as f:
+            json.dump(nuevas_noticias, f, ensure_ascii=False, indent=4)
+        
+        print(f"✅ Archivo {JSON_FILE} actualizado correctamente.")
+        
+        # 4. Opcional: Publicar una de ellas en LinkedIn (puedes añadir aquí tu lógica de Token)
+        # cat_random = random.choice(list(CATEGORIAS.keys()))
+        # publicar_en_linkedin(nuevas_noticias[cat_random])
 
 if __name__ == "__main__":
     ejecutar_flujo()
