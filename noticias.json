@@ -1,22 +1,18 @@
 {
-    "familia": {
-        "titulo": "¿Divorciado y con custodia compartida? Una nueva sentencia avala sumar la deducción por alimentos y el mínimo por hijo en la renta frente a Hacienda - EL PAÍS",
-        "resumen": "Analizamos las últimas novedades legislativas y jurisprudenciales en materia de Derecho Familia. Esta actualización es fundamental para entender la evolución normativa actual en España sobre este asunto.",
-        "url": "https://news.google.com/rss/articles/CBMiqwJBVV95cUxNbFY1NWFQQk9jTDRHYVNRNmd5Tm5IVjhmOHZFOGJreXdkWE5RRXVldnpNZWJRXzFpSjhFR2VleldHVEp6dlZCMzJMWUhTZDJHbDM4QXNReFU2YXcyVTJnOXI0aGg0bko2Qng2T2UwRnM3WlZLcVNEblRzRFVxc2ZBdjBvSWRsZ2NlWWF2bmVRNGxneUpKSEhwalc1U2NoTXhFNmg1Qy1qU0M5eDRpLU9LWDFxVDNnTV9SZnY4RllGaE1VaGkyY2xtR2gxbk4xSjA2Q0N5c3JxRFpqUFUzemJwU29zc1RMVlUyRURybnZSamFaamt1OEZ6MDRMUlVXUFBlRHB1RzAyY2ZXS29EcUxDRk9pc0RoQTl1STR4MlhjaTJHNVJ6ZWszS2Jta9IBvwJBVV95cUxQVUEyLWFuYTh4T2pqcFA0U1J2bXlhUDI5N1hfakVFSGl6YjBtUXFUNXFTbjQ1MnVUbGVLNXNhYlVOUEg5SEs3VlFkd2NneV9TZVpIZGhvbzkwTGJJOFE0OE9uaTUtdGNTS3dab3FERDUxZGREaHNKeEloWE5fbTBRU2tYRDVkZG82WC1tZGFTSjRIVzhLc2paekt1WDBoQzNYcXdYNXVuQUNXcFFQYWFjZm5ZdXZsa1VGRWhsaW9JRnhYam5BaGgtc01HaXVvZkRtX1NJSDFodUlLU0dLSFNaYmdOS1FDU3ItUkdkQ2JFWWFGT2FrMVRWQ25XZzJXR0VjVUNkX0VjY2xaUEI5QmZseDloREF4TjZPZFMwckozVGNpRWJfbjdCSldSTW4wYlhodkx2Zi15ZnNsZkNWZThz?oc=5"
+    "PENAL": {
+        "titulo": "Mejor abogado penalista de España: referencia jurídica y rankings en 2026",
+        "resumen": "Últimas novedades legislativas y jurisprudenciales en materia de Penal. Esta información es clave para entender la evolución normativa actual en España.",
+        "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOZHFhM05CLUpaV0NFQmFIT3JGeHlpbHJ2YUlkcW9IQ0xUZEdhbHdhdS14ZVp6Tm1qNVJ3TGtFV0dxbE01bExJOUstanFjTVdrUU9MbnVLbVpYVkF4ZDlZZXpGUGY4R0ZsazZncFlOX3ROakI1cjg0NzM3RmsxQnJKS1RtclpYTlowVFlHemVrSHhOc21RamY1RzFlUkwzMDFEN0JhRVpYa3pfWXRaTVRKWDFaMVI5RW5rTEVibUZ0OTktTlktMHEw?oc=5"
     },
-    "penal": {
-        "titulo": "El Consejo de Ministros aprueba el anteproyecto de Ley Orgánica de medidas en materia de violencia vicaria - igualdad.gob.es",
-        "resumen": "Analizamos las últimas novedades legislativas y jurisprudenciales en materia de Derecho Penal. Esta actualización es fundamental para entender la evolución normativa actual en España sobre este asunto.",
-        "url": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxOTUlSRFBkcXktTGVsNXZFanlGMDJBVnhHR0hIcXVXSzFueFpnOWZtZGdFVlduSkRXaDRBTExMVnNCU0N2TTFra0FtVnRtaERyZ2dhVW9zOFVjenlaTEYtenZrRVVjRy1pbGdiSVBRN0ppeGRXWEJmMHpvU0hQLWd6X2k3dFpEdXp1bUtFREplMV9OM1ZIZXUyM0hMcUtmTHpGSnZ0TTduS0hIVUN3bWlZZVAzdnFlcHNhcDM3WTdmSUFfM3BSVnNXQmh6MVhkeDYybFFRdGlGc3BWWENLMnZuSkNvZmtEM2gtbW5sSm15WTNmaDctOEE?oc=5"
+    "MERCANTIL": {
+        "titulo": "Dos proveedoras de material sanitario entran en concurso de acreedores",
+        "resumen": "Últimas novedades legislativas y jurisprudenciales en materia de Mercantil. Esta información es clave para entender la evolución normativa actual en España.",
+        "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNdWF1bjVqRF9OYXJqX0Nid0VzeFBLak92elBZeEFHTDFLR3RUS2QtT3pPVDBVbWtzWTFsZk1iVDRlanlQa0kzZVZpWDZzMlFxbzl0Wm9fOW51cThXNXRDLXJ1V2tSbnFMUXluVVJnZnduVi1KTEdPOHdLbkJzcVJHU3hNNE1WT3AtMlpsbVpIeWduRjhhb3lXMHNRT1JxUHBkdjhNOENDMWV6OXRKX3hqTi1WTHVQQzNqbUHSAb8BQVVfeXFMTzRHckE2dW1yaDhPMkNfQ2RwVVQyZ2NNLVdNYlVIdWJkaGJkdTNjT0NJM0t2U2hEdmI3dzhGenUyM3pLeGs2eUF6SlhnYXBLQzNNTDhlNlgyWDh6RE4tVm9YSDFncFlPcC1CamhxZF91aDVGcWR2bXVKc1k2Wm4tVGFQUkNlZW1MZmNSMUY1ZERwczk5Y0hLcFJYaDhxakhVMmlQZjY5eU1aRTdFMG9FNmhnNFVNM0pWZUI3ek82ZW8?oc=5"
     },
-    "mercantil": {
-        "titulo": "Los concursos de acreedores caen un 15% en los dos primeros meses de 2026, según Experian España - Comunicae",
-        "resumen": "Analizamos las últimas novedades legislativas y jurisprudenciales en materia de Derecho Mercantil. Esta actualización es fundamental para entender la evolución normativa actual en España sobre este asunto.",
-        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQX21sdE1lYnU4ZVhybEVqQWhscFJiNmQ0UmJ3bHNrQVhZTHJKUHJTSnVVQmYxQ19ZSzJobzFvMTdOMXk2Vm1YZXhqY0RFSXJ1Vi1zUGNJUXZWRktXRWRvUDVTbEx1a0lDemVaeW51aG5RS1RxWGhnV0ZPNGZGZUlodUxqUVROeG1LaS1N?oc=5"
-    },
-    "extranjeria": {
-        "titulo": "Regularización de Extranjeros: ¿Cambio de fechas? - Parainmigrantes",
-        "resumen": "Analizamos las últimas novedades legislativas y jurisprudenciales en materia de Derecho Extranjeria. Esta actualización es fundamental para entender la evolución normativa actual en España sobre este asunto.",
+    "EXTRANJERIA": {
+        "titulo": "Regularización de Extranjeros: ¿Cambio de fechas?",
+        "resumen": "Últimas novedades legislativas y jurisprudenciales en materia de Extranjeria. Esta información es clave para entender la evolución normativa actual en España.",
         "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQcEFwcUl3S05tRTc0WGt1ZEVEZUE2WXowbnJqNFNfU1lFaU8xSV9qbk9JYUMwYUtKbW9weEFoVmFpRGRrVVk0WjVOeVJZNFZoUm9HSnplU09Pdk5fVkhmQzd1ZExlWmkxSWM0UFpwektkQmlQQTNCM2VnOTJ6YVd0S3V6MEZxT1dUNnFieEVNYk5VWjhiVVNkQ1k4S0Z1b1dZMV9PcA?oc=5"
-    }
+    },
+    "fecha_actualizacion": "2026-03-17"
 }
