@@ -32,8 +32,13 @@ jobs:
         run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
-          # El truco está aquí: traemos los cambios remotos antes de subir los nuestros
-          git pull origin main --rebase 
+          
+          # 1. Preparamos los archivos generados por el script
           git add noticias.json historico_noticias.csv
-          git commit -m "v55: Sincronización de flujo y corrección de push" || echo "Sin cambios"
+          
+          # 2. Hacemos el commit localmente
+          git commit -m "v56: Sincronización forzada y limpieza de flujo" || echo "Sin cambios"
+          
+          # 3. Ahora sí, traemos lo que haya en la web y subimos lo nuevo
+          git pull origin main --rebase
           git push origin main
