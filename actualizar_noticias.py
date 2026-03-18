@@ -31,13 +31,30 @@ def noticia_ya_publicada(url_nueva):
 def guardar_en_historico(categoria, titulo, url):
     """Registra la noticia con timestamp para auditoría."""
     ahora = datetime.now().strftime("%Y-%m-%d %H:%M")
-    file_exists = os.path.isfile(HISTORICO_FILE)
     with open(HISTORICO_FILE, mode='a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow([ahora, categoria, titulo, url])
 
+def recuperar_ultima_del_historico(categoria):
+    """Busca la última noticia guardada de una categoría específica."""
+    if not os.path.exists(HISTORICO_FILE):
+        return None
+    
+    ultima_noticia = None
+    with open(HISTORICO_FILE, mode='r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        # Recorremos todo el historial para quedarnos con la última entrada de esa categoría
+        for fila in reader:
+            if len(fila) > 3 and fila[1] == categoria:
+                ultima_noticia = {
+                    "titulo": fila[2],
+                    "resumen": f"Últimas novedades legislativas y jurisprudenciales en materia de {categoria.capitalize()}.",
+                    "url": fila[3]
+                }
+    return ultima_noticia
+
 def buscar_noticias():
-    """Busca noticias frescas y filtra las que ya existen en el CSV."""
+    """Busca noticias frescas y aplica el respaldo si no hay novedades."""
     noticias_del_dia = {}
     
     for cat, url_rss in CATEGORIAS.items():
@@ -46,56 +63,48 @@ def buscar_noticias():
         
         for entrada in feed.entries:
             if not noticia_ya_publicada(entrada.link):
-                # Limpiamos el título (quitamos la fuente al final)
                 titulo_limpio = entrada.title.split(' - ')[0]
-                
                 noticias_del_dia[cat] = {
                     "titulo": titulo_limpio,
                     "resumen": f"Últimas novedades legislativas y jurisprudenciales en materia de {cat.capitalize()}. Esta información es clave para entender la evolución normativa actual en España.",
                     "url": entrada.link
                 }
-                # Guardamos en el CSV nada más encontrarla para "bloquearla"
                 guardar_en_historico(cat, titulo_limpio, entrada.link)
                 noticia_encontrada = True
                 break
         
-        # Si no hay nada nuevo en las últimas 24h, mantenemos un mensaje de cortesía
+        # SI NO HAY NOTICIAS NUEVAS, USAMOS EL RESPALDO
         if not noticia_encontrada:
-            print(f"⚠️ No hay noticias nuevas para {cat}. Se mantendrá la última conocida.")
+            print(f"⚠️ Buscando respaldo para {cat}...")
+            respaldo = recuperar_ultima_del_historico(cat)
+            if respaldo:
+                noticias_del_dia[cat] = respaldo
+                print(f"✅ Respaldo encontrado para {cat}")
 
     return noticias_del_dia
 
 def ejecutar_flujo():
     print("🤖 Iniciando actualización de noticias...")
-    
     hoy = datetime.now().strftime("%Y-%m-%d")
     
-    # 1. Verificar si ya se actualizó hoy (Lógica de Congelación Diaria)
+    # Lógica de Congelación Diaria
     if os.path.exists(JSON_FILE):
         with open(JSON_FILE, 'r', encoding='utf-8') as f:
             try:
                 datos_actuales = json.load(f)
                 if datos_actuales.get("fecha_actualizacion") == hoy:
-                    print(f"🛑 Noticias ya actualizadas hoy ({hoy}). Finalizando para evitar duplicados.")
+                    print(f"🛑 Ya actualizado hoy ({hoy}).")
                     return
             except json.JSONDecodeError:
                 pass
 
-    # 2. Buscar nuevas noticias
     nuevas_noticias = buscar_noticias()
     
     if nuevas_noticias:
         nuevas_noticias["fecha_actualizacion"] = hoy
-        
-        # 3. Guardar el JSON para la web (compatible con v51)
         with open(JSON_FILE, 'w', encoding='utf-8') as f:
             json.dump(nuevas_noticias, f, ensure_ascii=False, indent=4)
-        
-        print(f"✅ Archivo {JSON_FILE} actualizado correctamente.")
-        
-        # 4. Opcional: Publicar una de ellas en LinkedIn (puedes añadir aquí tu lógica de Token)
-        # cat_random = random.choice(list(CATEGORIAS.keys()))
-        # publicar_en_linkedin(nuevas_noticias[cat_random])
+        print(f"✅ Archivo {JSON_FILE} actualizado.")
 
 if __name__ == "__main__":
     ejecutar_flujo()
