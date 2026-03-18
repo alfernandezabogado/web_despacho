@@ -1499,15 +1499,11 @@ function closeModal() {
             }
         }, 2000); 
     });
-
- // 3. SELECTOR DE NOTICIAS AUTOMATIZADAS (v53 - Versión Unificada y Corregida)
+// 3. SELECTOR DE NOTICIAS AUTOMATIZADAS (v55 - Contraste y Dedo garantizado)
     async function changeArea(area, event) {
         try {
-            // 1. Carga de datos
             const response = await fetch(`./noticias.json?v=${Date.now()}`);
             const data = await response.json();
-            
-            // Forzamos MAYÚSCULAS para coincidir con el JSON (PENAL, MERCANTIL...)
             const areaID = area.toUpperCase(); 
 
             const titleElem = document.getElementById('news-title');
@@ -1516,8 +1512,10 @@ function closeModal() {
             const linkBtn = document.getElementById('news-link');
             const hand = document.getElementById('news-hand-container');
 
-            // 2. Lógica de visualización
+            // 1. Gestión de contenidos
             if (data[areaID] && data[areaID].titulo) {
+                if (hand) hand.classList.add('hidden'); // Ocultar dedo al elegir
+                
                 titleElem.innerText = data[areaID].titulo;
                 bodyElem.innerText = data[areaID].resumen;
                 dateElem.innerText = `Actualizado el: ${data[areaID].fecha}`;
@@ -1525,60 +1523,58 @@ function closeModal() {
                 if (data[areaID].url) {
                     linkBtn.href = data[areaID].url;
                     linkBtn.classList.remove('hidden');
-                    linkBtn.target = "_blank";
                 } else {
                     linkBtn.classList.add('hidden');
                 }
             } else {
-                // Caso: Categoría sin noticias en el JSON
-                titleElem.innerText = "Contenido en preparación";
-                bodyElem.innerText = `Estamos seleccionando las últimas novedades en materia de ${area.toLowerCase()}.`;
+                if (hand) hand.classList.add('hidden');
+                titleElem.innerText = "Próxima actualización";
+                bodyElem.innerText = `Estamos preparando las últimas novedades en materia de ${area.toLowerCase()}.`;
                 dateElem.innerText = "Sincronizando...";
                 linkBtn.classList.add('hidden');
             }
 
-            // 3. Feedback visual de botones
-            if (hand) hand.classList.add('hidden');
-            
+            // 2. Feedback visual de botones (CORRECCIÓN DE VISIBILIDAD)
             document.querySelectorAll('.area-btn').forEach(btn => {
-                btn.classList.remove('bg-yellow-500', 'text-white');
-                btn.classList.add('bg-transparent', 'text-gray-300');
+                // Quitamos todo lo anterior para que no haya conflictos
+                btn.classList.remove('bg-yellow-500', 'text-white', 'font-bold', 'shadow-lg');
+                // Devolvemos al estado gris suave
+                btn.classList.add('bg-transparent', 'text-gray-400');
             });
 
-            // Identificar botón para iluminar
+            // Buscamos el botón pulsado
             let targetBtn = (event && event.currentTarget) 
                 ? event.currentTarget 
                 : document.querySelector(`.area-btn[onclick*="${area}"]`);
 
             if (targetBtn) {
-                targetBtn.classList.remove('bg-transparent', 'text-gray-300');
-                targetBtn.classList.add('bg-yellow-500', 'text-white');
+                // Aplicamos el naranja y forzamos el texto a blanco puro
+                targetBtn.classList.remove('bg-transparent', 'text-gray-400');
+                targetBtn.classList.add('bg-yellow-500', 'text-white', 'font-bold', 'shadow-lg');
+                // Forzamos el estilo directamente para evitar que Tailwind lo sobrescriba
+                targetBtn.style.color = "#ffffff"; 
             }
 
         } catch (error) {
-            console.error("Error crítico en las noticias:", error);
+            console.error("Error:", error);
         }
     }
 
-    // DISPARADOR INICIAL AL CARGAR LA WEB
-    window.onload = async () => {
-        try {
-            const response = await fetch(`./noticias.json?v=${Date.now()}`);
-            const data = await response.json();
-            
-            // Prioridad: busca la primera categoría que tenga noticias reales en el JSON
-            const categorias = ['FAMILIA', 'PENAL', 'MERCANTIL', 'EXTRANJERIA'];
-            const catDisponible = categorias.find(c => data[c] && data[c].titulo);
-            
-            // Si hay una con noticias, la carga. Si no, carga FAMILIA por defecto.
-            changeArea(catDisponible || 'FAMILIA', null);
-            
-        } catch (e) { 
-            console.error("Error en la carga inicial:", e);
-            // Si falla el fetch, al menos cargamos la interfaz base
-            changeArea('FAMILIA', null);
-        }
-    };
+    // WINDOW ONLOAD: Limpio para que aparezca el dedo y nada más
+    window.onload = () => {
+        // 1. Asegurar que el dedo es lo único visible en la caja de noticias
+        const hand = document.getElementById('news-hand-container');
+        if (hand) hand.classList.remove('hidden');
+        
+        document.getElementById('news-title').innerText = "";
+        document.getElementById('news-body').innerText = "";
+        document.getElementById('news-date').innerText = "";
+        document.getElementById('news-link').classList.add('hidden');
+
+        // 2. Copyright automático
+        const copyElement = document.getElementById('copyright-text-auto');
+        if (copyElement) copyElement.innerHTML = `&copy; ${new Date().getFullYear()} Ángel Luis Fernández Sanz.`;
+    };    
 </script>
 </body>
 </html>
