@@ -1512,7 +1512,8 @@ function closeModal() {
             // 1. Actualización de textos (usando los nombres exactos del bot de Python)
             document.getElementById('news-title').innerText = data[area].titulo;
             document.getElementById('news-body').innerText = data[area].resumen;
-            document.getElementById('news-date').innerText = "Actualizado hoy";
+            const fechaReal = data[area].fecha;
+            document.getElementById('news-date').innerText = `Actualizado el: ${fechaReal}`;
             
             // 2. Gestión del botón "Ir a la noticia"
             const linkBtn = document.getElementById('news-link');
