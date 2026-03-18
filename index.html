@@ -1530,16 +1530,39 @@ function closeModal() {
             const hand = document.getElementById('news-hand-container');
             if (hand) hand.classList.add('hidden');
             
-            // Limpiar estilos de otros botones y marcar el actual
+            // Limpiar estilos y marcar el actual
             document.querySelectorAll('.area-btn').forEach(btn => {
                 btn.classList.remove('bg-yellow-500', 'text-white');
             });
-            event.currentTarget.classList.add('bg-yellow-500', 'text-white');
+
+            // CAMBIO AQUÍ: Usamos una validación para que no falle si es un clic automático
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('bg-yellow-500', 'text-white');
+            } else {
+                // Si es el autoclic inicial, buscamos el botón por el nombre del área
+                const autoBtn = document.querySelector(`.area-btn[onclick*="${area}"]`);
+                if (autoBtn) autoBtn.classList.add('bg-yellow-500', 'text-white');
+            }
         }
     } catch (error) {
         console.error("Error al cargar las noticias:", error);
     }
 }
+
+// AQUÍ PEGAS EL WINDOW.ONLOAD QUE TE PASÉ ANTES
+window.onload = async () => {
+    try {
+        const response = await fetch(`./noticias.json?v=${Date.now()}`);
+        const data = await response.json();
+        const categorias = ['FAMILIA', 'PENAL', 'MERCANTIL', 'EXTRANJERIA'];
+        const catDisponible = categorias.find(c => data[c]);
+        
+        if (catDisponible) {
+            // Llamamos a la función directamente para evitar errores de 'event'
+            changeArea(catDisponible, null);
+        }
+    } catch (e) { console.error(e); }
+};
 </script>
 </body>
 </html>
