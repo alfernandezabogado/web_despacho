@@ -3,7 +3,6 @@ import requests
 import json
 import os
 import csv
-import random
 from datetime import datetime
 
 # --- CONFIGURACIÓN ---
@@ -17,94 +16,77 @@ CATEGORIAS = {
 HISTORICO_FILE = 'historico_noticias.csv'
 JSON_FILE = 'noticias.json'
 
+# --- 1. FUNCIONES DE APOYO ---
+
 def noticia_ya_publicada(url_nueva):
-    """Consulta el historial para evitar repetir la misma noticia."""
-    if not os.path.exists(HISTORICO_FILE):
-        return False
+    """Evita duplicados en el CSV."""
+    if not os.path.exists(HISTORICO_FILE): return False
     with open(HISTORICO_FILE, mode='r', encoding='utf-8') as f:
         reader = csv.reader(f)
-        for fila in reader:
-            if len(fila) > 3 and url_nueva == fila[3]:
-                return True
-    return False
+        return any(len(fila) > 3 and url_nueva == fila[3] for fila in reader)
 
 def guardar_en_historico(categoria, titulo, url):
-    """Registra la noticia con timestamp para auditoría."""
+    """Guarda la noticia con fecha y hora exacta."""
     ahora = datetime.now().strftime("%Y-%m-%d %H:%M")
     with open(HISTORICO_FILE, mode='a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow([ahora, categoria, titulo, url])
 
-def recuperar_ultima_del_historico(categoria):
-    """Busca la última noticia guardada de una categoría específica."""
+# --- 2. LA FUNCIÓN CLAVE QUE PEDÍAS ---
+
+def obtener_ultimas_del_historico():
+    """Extrae la noticia más reciente de cada categoría del histórico."""
+    ultimas = {}
     if not os.path.exists(HISTORICO_FILE):
-        return None
-    
-    ultima_noticia = None
+        return ultimas
+
     with open(HISTORICO_FILE, mode='r', encoding='utf-8') as f:
         reader = csv.reader(f)
-        # Recorremos todo el historial para quedarnos con la última entrada de esa categoría
         for fila in reader:
-            if len(fila) > 3 and fila[1] == categoria:
-                ultima_noticia = {
-                    "titulo": fila[2],
-                    "resumen": f"Últimas novedades legislativas y jurisprudenciales en materia de {categoria.capitalize()}.",
-                    "url": fila[3]
+            if len(fila) >= 4:
+                fecha_str, cat, titulo, url = fila[0], fila[1], fila[2], fila[3]
+                # Al recorrer todo el archivo, el último registro de cada categoría 
+                # machaca al anterior, dejándonos siempre con lo más nuevo.
+                ultimas[cat] = {
+                    "titulo": titulo.split(' - ')[0],
+                    "resumen": f"Últimas novedades legislativas en {cat.capitalize()}. Información actualizada según la base de datos de nuestro despacho.",
+                    "url": url,
+                    "fecha": fecha_str  # Esta es la fecha que usaremos en la web
                 }
-    return ultima_noticia
+    return ultimas
 
-def buscar_noticias():
-    """Busca noticias frescas y aplica el respaldo si no hay novedades."""
-    noticias_del_dia = {}
-    
+# --- 3. LÓGICA DE EJECUCIÓN ---
+
+def buscar_nuevas_noticias():
+    """Busca en Google News y alimenta el CSV si hay algo nuevo."""
+    print("🔎 Buscando novedades en Google News...")
     for cat, url_rss in CATEGORIAS.items():
         feed = feedparser.parse(url_rss)
-        noticia_encontrada = False
-        
         for entrada in feed.entries:
             if not noticia_ya_publicada(entrada.link):
                 titulo_limpio = entrada.title.split(' - ')[0]
-                noticias_del_dia[cat] = {
-                    "titulo": titulo_limpio,
-                    "resumen": f"Últimas novedades legislativas y jurisprudenciales en materia de {cat.capitalize()}. Esta información es clave para entender la evolución normativa actual en España.",
-                    "url": entrada.link
-                }
                 guardar_en_historico(cat, titulo_limpio, entrada.link)
-                noticia_encontrada = True
-                break
+                print(f"🆕 Nueva noticia guardada para {cat}")
+                break # Solo guardamos la primera nueva que encontremos por categoría
+
+def ejecutar_sincronizacion():
+    print("🤖 Iniciando proceso de sincronización...")
+    
+    # Primero: Alimentamos el histórico con lo que haya hoy
+    buscar_nuevas_noticias()
+    
+    # Segundo: Leemos el histórico para construir el JSON de la web
+    datos_finales = obtener_ultimas_del_historico()
+    
+    if datos_finales:
+        # Añadimos una marca de cuándo se sincronizó el sistema por última vez
+        datos_finales["fecha_sistema"] = datetime.now().strftime("%Y-%m-%d %H:%M")
         
-        # SI NO HAY NOTICIAS NUEVAS, USAMOS EL RESPALDO
-        if not noticia_encontrada:
-            print(f"⚠️ Buscando respaldo para {cat}...")
-            respaldo = recuperar_ultima_del_historico(cat)
-            if respaldo:
-                noticias_del_dia[cat] = respaldo
-                print(f"✅ Respaldo encontrado para {cat}")
-
-    return noticias_del_dia
-
-def ejecutar_flujo():
-    print("🤖 Iniciando actualización de noticias...")
-    hoy = datetime.now().strftime("%Y-%m-%d")
-    
-    # Lógica de Congelación Diaria
-    if os.path.exists(JSON_FILE):
-        with open(JSON_FILE, 'r', encoding='utf-8') as f:
-            try:
-                datos_actuales = json.load(f)
-                if datos_actuales.get("fecha_actualizacion") == hoy:
-                    print(f"🛑 Ya actualizado hoy ({hoy}).")
-                    return
-            except json.JSONDecodeError:
-                pass
-
-    nuevas_noticias = buscar_noticias()
-    
-    if nuevas_noticias:
-        nuevas_noticias["fecha_actualizacion"] = hoy
         with open(JSON_FILE, 'w', encoding='utf-8') as f:
-            json.dump(nuevas_noticias, f, ensure_ascii=False, indent=4)
-        print(f"✅ Archivo {JSON_FILE} actualizado.")
+            json.dump(datos_finales, f, ensure_ascii=False, indent=4)
+        print(f"✅ Web actualizada con éxito con datos del histórico.")
+    else:
+        print("❌ Error: El histórico está vacío.")
 
 if __name__ == "__main__":
-    ejecutar_flujo()
+    ejecutar_sincronizacion()
