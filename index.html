@@ -1500,69 +1500,77 @@ function closeModal() {
         }, 2000); 
     });
 
-    // 3. SELECTOR DE NOTICIAS AUTOMATIZADAS (v51)
-// Busca "// 3. SELECTOR DE NOTICIAS AUTOMATIZADAS" y reemplaza la función:
- async function changeArea(area, event) {
+    // 3. SELECTOR DE NOTICIAS AUTOMATIZADAS (v52 - Versión Robusta)
+async function changeArea(area, event) {
     try {
-        // Añadimos timestamp para evitar caché
-        const response = await fetch(`./noticias.json?v=${new Date().getTime()}`);
+        const response = await fetch(`./noticias.json?v=${Date.now()}`);
         const data = await response.json();
         
-        if (data[area]) {
-            // 1. Actualización de textos (usando los nombres exactos del bot de Python)
+        // --- VALIDACIÓN DE SEGURIDAD ---
+        // Si no hay datos para el área, mostramos un mensaje amigable y permitimos seguir navegando
+        if (!data[area]) {
+            document.getElementById('news-title').innerText = "Próxima actualización";
+            document.getElementById('news-body').innerText = `Estamos preparando las últimas novedades en materia de ${area.toLowerCase()}.`;
+            document.getElementById('news-date').innerText = "Sincronizando...";
+            document.getElementById('news-link').classList.add('hidden');
+        } else {
+            // Actualización de textos con datos reales
             document.getElementById('news-title').innerText = data[area].titulo;
             document.getElementById('news-body').innerText = data[area].resumen;
-            const fechaReal = data[area].fecha;
-            document.getElementById('news-date').innerText = `Actualizado el: ${fechaReal}`;
+            document.getElementById('news-date').innerText = `Actualizado el: ${data[area].fecha}`;
             
-            // 2. Gestión del botón "Ir a la noticia"
+            // Gestión del botón de enlace
             const linkBtn = document.getElementById('news-link');
-            const noticiaUrl = data[area].url; // Usamos 'url', no 'url_fuente'
-
-            if (noticiaUrl) {
-                linkBtn.href = noticiaUrl;
+            if (data[area].url) {
+                linkBtn.href = data[area].url;
                 linkBtn.classList.remove('hidden');
-                linkBtn.target = "_blank"; // Aseguramos que abra en pestaña nueva
+                linkBtn.target = "_blank";
             } else {
                 linkBtn.classList.add('hidden');
             }
-            
-            // 3. Feedback visual: ocultar la mano y marcar botón activo
-            const hand = document.getElementById('news-hand-container');
-            if (hand) hand.classList.add('hidden');
-            
-            // Limpiar estilos y marcar el actual
-            document.querySelectorAll('.area-btn').forEach(btn => {
-                btn.classList.remove('bg-yellow-500', 'text-white');
-            });
-
-            // CAMBIO AQUÍ: Usamos una validación para que no falle si es un clic automático
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('bg-yellow-500', 'text-white');
-            } else {
-                // Si es el autoclic inicial, buscamos el botón por el nombre del área
-                const autoBtn = document.querySelector(`.area-btn[onclick*="${area}"]`);
-                if (autoBtn) autoBtn.classList.add('bg-yellow-500', 'text-white');
-            }
         }
+
+        // --- GESTIÓN VISUAL DE BOTONES (Siempre se ejecuta) ---
+        const hand = document.getElementById('news-hand-container');
+        if (hand) hand.classList.add('hidden');
+        
+        // Resetear todos los botones a su estado original
+        document.querySelectorAll('.area-btn').forEach(btn => {
+            btn.classList.remove('bg-yellow-500', 'text-white');
+            btn.classList.add('bg-transparent', 'text-gray-300');
+        });
+
+        // Identificar y marcar el botón activo
+        let targetBtn = (event && event.currentTarget) 
+            ? event.currentTarget 
+            : document.querySelector(`.area-btn[onclick*="${area}"]`);
+
+        if (targetBtn) {
+            targetBtn.classList.remove('bg-transparent', 'text-gray-300');
+            targetBtn.classList.add('bg-yellow-500', 'text-white');
+        }
+
     } catch (error) {
         console.error("Error al cargar las noticias:", error);
     }
 }
 
-// AQUÍ PEGAS EL WINDOW.ONLOAD QUE TE PASÉ ANTES
+// DISPARADOR INICIAL
 window.onload = async () => {
     try {
         const response = await fetch(`./noticias.json?v=${Date.now()}`);
         const data = await response.json();
-        const categorias = ['FAMILIA', 'PENAL', 'MERCANTIL', 'EXTRANJERIA'];
-        const catDisponible = categorias.find(c => data[c]);
         
-        if (catDisponible) {
-            // Llamamos a la función directamente para evitar errores de 'event'
-            changeArea(catDisponible, null);
-        }
-    } catch (e) { console.error(e); }
+        // Prioridad de carga: busca la primera que tenga contenido real
+        const categorias = ['FAMILIA', 'PENAL', 'MERCANTIL', 'EXTRANJERIA'];
+        const catDisponible = categorias.find(c => data[c] && data[c].url !== "");
+        
+        // Si hay una disponible, la carga. Si no, carga la primera por defecto (Familia)
+        changeArea(catDisponible || 'FAMILIA', null);
+        
+    } catch (e) { 
+        console.error("Error en la carga inicial:", e); 
+    }
 };
 </script>
 </body>
