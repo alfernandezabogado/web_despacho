@@ -1,13 +1,33 @@
 {
+    "Categoría": {
+        "titulo": "Título",
+        "resumen": "Últimas novedades legislativas en Categoría.",
+        "url": "Enlace Fuente",
+        "fecha": "Fecha"
+    },
+    "FAMILIA": {
+        "titulo": "Custodia compartida: el Supremo pone límites al uso de la vivienda familiar",
+        "resumen": "Últimas novedades legislativas en Familia.",
+        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxOQnNnNU0tYnJCWERxWTF3bjB2YTllVGNyRkJFUm5DTHdDTTlETVlOZXNhQ1VLeThlZVZ6LXljVE9UdUJxb09pMFVVOU4yRXJIeFBBcmkzNVozRkhpb2JNb213bjZPWWQ4RW41bVlPN0JHbjhuWU9UclZHOE5SQUVBRjRpUGtBbmZtOFBYdDFQYjVTTURfT3lXbnkxU18zcU43djlNWlNsVmc2OWsyS2RHMzhTWHViQUJwUU0tM3d5eGMxeTRjNEVBT242VGJJbk1qS1VpNg?oc=5",
+        "fecha": "2026-03-13 11:25"
+    },
     "PENAL": {
-        "titulo": "Aranzadi LA LEY Exprés: Los criterios de la segunda oportunidad y EPIS se siguen desarrollando por el TS",
-        "resumen": "Últimas novedades legislativas y jurisprudenciales en materia de Penal. Esta información es clave para entender la evolución normativa actual en España.",
-        "url": "https://news.google.com/rss/articles/CBMijwJBVV95cUxQQkNqam9GXzlwWG92MVY0cjh1UXNoOVlQUmtvRjFvYXUxbmZzVmFsbWIxREpjY1c1eFNUdHpKTVRWNlJXdzA4dzFfN05lRUMxSFpDNEdvVm9TOWp4WEc1ZnJBSnNDNWdSRXU5QlptU2pSTWQtNXFWS0x3S3l6cGJCZmx6aF9LNjIycVFNVFdLVHplZG1mVFp4Mk93Mlduck5CQ2xfcE5aT3R6Qms0NXc5c1JLUGZNQlBOc2hMWm5JN09DM2hXZ0xzRkhydzVqR09HMVZIdUh6aWVYM1VwWHJlX3hFM0tWZVpSdGRCXzRQeWJDaG5jZjBoQzRYR2FiWkVlYTF5SDdxTjM5MlN0bjJB?oc=5"
+        "titulo": "la prisión permanente revisable: qué cambia y qué no en el Código Penal",
+        "resumen": "Últimas novedades legislativas en Penal.",
+        "url": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxQYnJaY3pDbGVzcmtmdDJmTHV4eklmQ3NEVmIwY1pBem5qbTZGZmJuTDlXeVRVNU5vYzZ0YjY3SjQyNmVwZmxGWDRjWjNvX28tLTlxU1d0bmlPQjFSZ2pHYkpPZDNOay11QnZ4aVBnc0trbnN0N045TXVDSnhHU010dUdqb3Y1aFJkUXZQbDB1X2dINldQd2pOamZIcHhUa3A0T3J3UndIV2pBLW5JaEVOWWFOU182Z25QYXpzdEdNSUlOSHRXclJYQVo3TndKRndyc1E1SW8wSVpTOGZhNG5kYnpNVEhJSTAyMzloUtIB7AFBVV95cUxQYnJaY3pDbGVzcmtmdDJmTHV4eklmQ3NEVmIwY1pBem5qbTZGZmJuTDlXeVRVNU5vYzZ0YjY3SjQyNmVwZmxGWDRjWjNvX28tLTlxU1d0bmlPQjFSZ2pHYkpPZDNOay11QnZ4aVBnc0trbnN0N045TXVDSnhHU010dUdqb3Y1aFJkUXZQbDB1X2dINldQd2pOamZIcHhUa3A0T3J3UndIV2pBLW5JaEVOWWFOU182Z25QYXpzdEdNSUlOSHRXclJYQVo3TndKRndyc1E1SW8wSVpTOGZhNG5kYnpNVEhJSTAyMzloUg?oc=5",
+        "fecha": "2026-03-18 11:06"
     },
     "MERCANTIL": {
-        "titulo": "Los acreedores de una cementera brasileña que debe 4.000 M usan España para tomar el control",
-        "resumen": "Últimas novedades legislativas y jurisprudenciales en materia de Mercantil. Esta información es clave para entender la evolución normativa actual en España.",
-        "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNYkhaUWt0ZS0tSlgxcVpGS0RXTUpNYXdsQ0JJVTdQR0dGNXpOelFzWlVzeS1pMUp2dUF3c2E0YUtrXzlTdkZKeUhYSmR6MTd3ZjFWU1kzdGNadnVnTG8xQmVNakwxWERNX20xN1E2OWNRczFIUExwQ0E1U0lFeDdRLVhjNlhaM3ZjZ2JORlNpTnM4djhzSS1qQUhMRnNyd3ZqZnYtTkFyLXhFMGJFM0E?oc=5"
+        "titulo": "Las nuevas sociedades mercantiles se disparan en febrero más de un 40%, según los registradores",
+        "resumen": "Últimas novedades legislativas en Mercantil.",
+        "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNYU9SZVpYRF9rN1FGYUJHTW5FbkdRbTFON3VjLVNPTE0yc0FEV0w3YjFsTjJLMlFqZl9LLWhSMXJqV3JXcTdXQWZBY01ud1R0QmNOcmhPLTNudWs4dkR5c2NLQVgzTV9wX0hzRllqUXNMejlrLVUxLWpBM1c3eElwSUw5bU0waEQ0aTU2N041WE1qZjRaT2VDOXl6Z1I4cG9NWGh3bzhaZThoSGpjeGQxYlhKOWU3VC01ZFI2dnpLVXgyaFkwYmJV0gHMAUFVX3lxTFA2NmpRU2FvN0prSnpwYURMZDcyQzFUeThuUzF3b091Yl9tSnhkek9ucl9Oa3ZMLTVsUXBTcEh5VUN2QkNueWpwV1VUN09UR00tbEFGUnNuNEp4cVhQdFFWdW5ObVJMZ0NEY1UxWW5MTXpjMVd6M2R0RGEzNDZyX0NZTGs0ZzV3aExadjFXdENubjJqenBwc3BVRk1UUURaTFZVdG50eDZYd2NXelZJdWJwUUdzclNmcm5zUVNzLXpJRm1uUVhtYkZwOGFndw?oc=5",
+        "fecha": "2026-03-18 11:06"
     },
-    "fecha_actualizacion": "2026-03-18"
+    "EXTRANJERIA": {
+        "titulo": "Regularización de Extranjeros: ¿Cambio de fechas?",
+        "resumen": "Últimas novedades legislativas en Extranjeria.",
+        "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQcEFwcUl3S05tRTc0WGt1ZEVEZUE2WXowbnJqNFNfU1lFaU8xSV9qbk9JYUMwYUtKbW9weEFoVmFpRGRrVVk0WjVOeVJZNFZoUm9HSnplU09Pdk5fVkhmQzd1ZExlWmkxSWM0UFpwektkQmlQQTNCM2VnOTJ6YVd0S3V6MEZxT1dUNnFieEVNYk5VWjhiVVNkQ1k4S0Z1b1dZMV9PcA?oc=5",
+        "fecha": "2026-03-17 18:01"
+    },
+    "fecha_sistema": "2026-03-18 11:06"
 }
