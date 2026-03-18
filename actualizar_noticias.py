@@ -34,7 +34,17 @@ def guardar_en_historico(categoria, titulo, url):
 
 def obtener_ultimas_del_historico():
     ultimas = {}
+    # Inicializamos todas las categorías para que la web siempre tenga los 4 botones funcionales
+    for cat in CATEGORIAS.keys():
+        ultimas[cat] = {
+            "titulo": f"Actualidad en {cat.capitalize()}",
+            "resumen": "Estamos seleccionando las noticias más relevantes de las últimas horas. Vuelva a consultar en unos minutos.",
+            "url": "",
+            "fecha": "Sincronizando..."
+        }
+    
     if not os.path.exists(HISTORICO_FILE): return ultimas
+
     with open(HISTORICO_FILE, mode='r', encoding='utf-8') as f:
         reader = csv.reader(f)
         for fila in reader:
