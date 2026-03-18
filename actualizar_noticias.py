@@ -8,10 +8,10 @@ from datetime import datetime
 
 # --- CONFIGURACIÓN ---
 CATEGORIAS = {
-    "FAMILIA": "https://news.google.com/rss/search?q=sentencia+custodia+compartida+España+when:24h&hl=es&gl=ES&ceid=ES:es",
-    "PENAL": "https://news.google.com/rss/search?q=derecho+penal+España+actualidad+when:24h&hl=es&gl=ES&ceid=ES:es",
-    "MERCANTIL": "https://news.google.com/rss/search?q=concurso+acreedores+España+noticias+when:24h&hl=es&gl=ES&ceid=ES:es",
-    "EXTRANJERIA": "https://news.google.com/rss/search?q=reforma+reglamento+extranjería+España+when:24h&hl=es&gl=ES&ceid=ES:es"
+    "FAMILIA": "https://news.google.com/rss/search?q=sentencia+custodia+compartida+España+when:7d&hl=es&gl=ES&ceid=ES:es",
+    "PENAL": "https://news.google.com/rss/search?q=derecho+penal+España+actualidad+when:7d&hl=es&gl=ES&ceid=ES:es",
+    "MERCANTIL": "https://news.google.com/rss/search?q=concurso+acreedores+España+noticias+when:7d&hl=es&gl=ES&ceid=ES:es",
+    "EXTRANJERIA": "https://news.google.com/rss/search?q=reforma+reglamento+extranjería+España+when:7d&hl=es&gl=ES&ceid=ES:es"
 }
 
 HISTORICO_FILE = 'historico_noticias.csv'
