@@ -1500,107 +1500,85 @@ function closeModal() {
         }, 2000); 
     });
 
- // 3. SELECTOR DE NOTICIAS AUTOMATIZADAS (v52 - Versión Robusta)
+ // 3. SELECTOR DE NOTICIAS AUTOMATIZADAS (v53 - Versión Unificada y Corregida)
     async function changeArea(area, event) {
-    try {
-        const response = await fetch(`./noticias.json?v=${Date.now()}`);
-        const data = await response.json();
-        
-        // CORRECCIÓN CRÍTICA: Convertimos el parámetro a MAYÚSCULAS 
-        // para que coincida con las claves del JSON (PENAL, MERCANTIL, etc.)
-        const areaID = area.toUpperCase(); 
-
-        const titleElem = document.getElementById('news-title');
-        const bodyElem = document.getElementById('news-body');
-        const dateElem = document.getElementById('news-date');
-        const linkBtn = document.getElementById('news-link');
-
-        if (data[areaID]) {
-            // Pintamos los datos usando la clave en MAYÚSCULAS
-            titleElem.innerText = data[areaID].titulo;
-            bodyElem.innerText = data[areaID].resumen;
-            dateElem.innerText = `Actualizado el: ${data[areaID].fecha}`;
+        try {
+            // 1. Carga de datos
+            const response = await fetch(`./noticias.json?v=${Date.now()}`);
+            const data = await response.json();
             
-            if (data[areaID].url) {
-                linkBtn.href = data[areaID].url;
-                linkBtn.classList.remove('hidden');
-                linkBtn.target = "_blank";
+            // Forzamos MAYÚSCULAS para coincidir con el JSON (PENAL, MERCANTIL...)
+            const areaID = area.toUpperCase(); 
+
+            const titleElem = document.getElementById('news-title');
+            const bodyElem = document.getElementById('news-body');
+            const dateElem = document.getElementById('news-date');
+            const linkBtn = document.getElementById('news-link');
+            const hand = document.getElementById('news-hand-container');
+
+            // 2. Lógica de visualización
+            if (data[areaID] && data[areaID].titulo) {
+                titleElem.innerText = data[areaID].titulo;
+                bodyElem.innerText = data[areaID].resumen;
+                dateElem.innerText = `Actualizado el: ${data[areaID].fecha}`;
+                
+                if (data[areaID].url) {
+                    linkBtn.href = data[areaID].url;
+                    linkBtn.classList.remove('hidden');
+                    linkBtn.target = "_blank";
+                } else {
+                    linkBtn.classList.add('hidden');
+                }
             } else {
+                // Caso: Categoría sin noticias en el JSON
+                titleElem.innerText = "Contenido en preparación";
+                bodyElem.innerText = `Estamos seleccionando las últimas novedades en materia de ${area.toLowerCase()}.`;
+                dateElem.innerText = "Sincronizando...";
                 linkBtn.classList.add('hidden');
             }
-        } else {
-            // Si el área no existe en el JSON (como FAMILIA ahora mismo)
-            titleElem.innerText = "Contenido en preparación";
-            bodyElem.innerText = `Estamos seleccionando las últimas novedades en materia de ${area.toLowerCase()}.`;
-            dateElem.innerText = "Sincronizando...";
-            linkBtn.classList.add('hidden');
+
+            // 3. Feedback visual de botones
+            if (hand) hand.classList.add('hidden');
+            
+            document.querySelectorAll('.area-btn').forEach(btn => {
+                btn.classList.remove('bg-yellow-500', 'text-white');
+                btn.classList.add('bg-transparent', 'text-gray-300');
+            });
+
+            // Identificar botón para iluminar
+            let targetBtn = (event && event.currentTarget) 
+                ? event.currentTarget 
+                : document.querySelector(`.area-btn[onclick*="${area}"]`);
+
+            if (targetBtn) {
+                targetBtn.classList.remove('bg-transparent', 'text-gray-300');
+                targetBtn.classList.add('bg-yellow-500', 'text-white');
+            }
+
+        } catch (error) {
+            console.error("Error crítico en las noticias:", error);
         }
+    }
 
-        // --- GESTIÓN VISUAL DE BOTONES ---
-        const hand = document.getElementById('news-hand-container');
-        if (hand) hand.classList.add('hidden');
-        
-        document.querySelectorAll('.area-btn').forEach(btn => {
-            btn.classList.remove('bg-yellow-500', 'text-white');
-            btn.classList.add('bg-transparent', 'text-gray-300');
-        });
-
-        let targetBtn = (event && event.currentTarget) 
-            ? event.currentTarget 
-            : document.querySelector(`.area-btn[onclick*="${area}"]`);
-
-        if (targetBtn) {
-            targetBtn.classList.remove('bg-transparent', 'text-gray-300');
-            targetBtn.classList.add('bg-yellow-500', 'text-white');
+    // DISPARADOR INICIAL AL CARGAR LA WEB
+    window.onload = async () => {
+        try {
+            const response = await fetch(`./noticias.json?v=${Date.now()}`);
+            const data = await response.json();
+            
+            // Prioridad: busca la primera categoría que tenga noticias reales en el JSON
+            const categorias = ['FAMILIA', 'PENAL', 'MERCANTIL', 'EXTRANJERIA'];
+            const catDisponible = categorias.find(c => data[c] && data[c].titulo);
+            
+            // Si hay una con noticias, la carga. Si no, carga FAMILIA por defecto.
+            changeArea(catDisponible || 'FAMILIA', null);
+            
+        } catch (e) { 
+            console.error("Error en la carga inicial:", e);
+            // Si falla el fetch, al menos cargamos la interfaz base
+            changeArea('FAMILIA', null);
         }
-
-    } catch (error) {
-        console.error("Error al cargar las noticias:", error);
-    }
-}
-
-        // --- GESTIÓN VISUAL DE BOTONES (Siempre se ejecuta) ---
-        const hand = document.getElementById('news-hand-container');
-        if (hand) hand.classList.add('hidden');
-        
-        // Resetear todos los botones a su estado original
-        document.querySelectorAll('.area-btn').forEach(btn => {
-            btn.classList.remove('bg-yellow-500', 'text-white');
-            btn.classList.add('bg-transparent', 'text-gray-300');
-        });
-
-        // Identificar y marcar el botón activo
-        let targetBtn = (event && event.currentTarget) 
-            ? event.currentTarget 
-            : document.querySelector(`.area-btn[onclick*="${area}"]`);
-
-        if (targetBtn) {
-            targetBtn.classList.remove('bg-transparent', 'text-gray-300');
-            targetBtn.classList.add('bg-yellow-500', 'text-white');
-        }
-
-    } catch (error) {
-        console.error("Error al cargar las noticias:", error);
-    }
-}
-
-// DISPARADOR INICIAL
-window.onload = async () => {
-    try {
-        const response = await fetch(`./noticias.json?v=${Date.now()}`);
-        const data = await response.json();
-        
-        // Prioridad de carga: busca la primera que tenga contenido real
-        const categorias = ['FAMILIA', 'PENAL', 'MERCANTIL', 'EXTRANJERIA'];
-        const catDisponible = categorias.find(c => data[c] && data[c].url !== "");
-        
-        // Si hay una disponible, la carga. Si no, carga la primera por defecto (Familia)
-        changeArea(catDisponible || 'FAMILIA', null);
-        
-    } catch (e) { 
-        console.error("Error en la carga inicial:", e); 
-    }
-};
+    };
 </script>
 </body>
 </html>
