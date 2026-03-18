@@ -565,39 +565,37 @@
         </button>
     </div>
 
-        <div id="news-display" class="scroll-mt-24">
-    <div id="news-container" class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 min-h-[280px] transition-all duration-500">
-        
-<div id="news-container" class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 min-h-[280px] transition-all duration-500">
-    
-    <h4 id="news-title" class="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-        Seleccione una categoría
-    </h4>
-
-    <p id="news-body" class="text-gray-600 text-lg leading-relaxed mb-8 text-center">
-        Haga clic en los botones para ver las novedades jurídicas del día.
-    </p>
-    
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-6 border-t pt-6">
-        <span id="news-date" class="text-gray-400 italic text-xs">Esperando selección...</span>
-        
-        <div class="flex items-center gap-4">
-            <a id="news-link" href="#" target="_blank" 
-               class="hidden bg-slate-900 text-amber-500 hover:bg-amber-600 hover:text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-lg border border-amber-500/30">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                </svg>
-                Ir a la noticia
-            </a>
+    <div id="news-display" class="scroll-mt-24">
+        <div id="news-container" class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 min-h-[280px] transition-all duration-500 relative flex flex-col justify-center">
             
-            <a href="#contacto" class="bg-yellow-500 text-white px-6 py-2.5 rounded-full text-sm font-black hover:bg-yellow-600 shadow-md">
-                Consultar caso
-            </a>
+            <div id="news-hand-container" class="flex flex-col items-center justify-center py-10">
+                <i class="fa-solid fa-hand-pointer text-5xl mb-4 animate-bounce text-yellow-500"></i>
+                <p class="text-xl font-medium text-gray-900 dark:text-white text-center">Seleccione un concepto para ver la actualidad jurídica</p>
+            </div>
+
+            <h4 id="news-title" class="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center"></h4>
+            <p id="news-body" class="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-8 text-center"></p>
+            
+            <div id="news-footer" class="flex flex-col sm:flex-row justify-between items-center gap-6 border-t pt-6">
+                <span id="news-date" class="text-gray-400 italic text-xs"></span>
+                
+                <div class="flex items-center gap-4">
+                    <a id="news-link" href="#" target="_blank" 
+                       class="hidden bg-slate-900 text-amber-500 hover:bg-amber-600 hover:text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-lg border border-amber-500/30">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                        Ir a la noticia
+                    </a>
+                    
+                    <a href="#contacto" class="bg-yellow-500 text-white px-6 py-2.5 rounded-full text-sm font-black hover:bg-yellow-600 shadow-md">
+                        Consultar caso
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
-</div>        
 </section>
-
 <section class="py-20 bg-white overflow-hidden">
     <div class="max-w-6xl mx-auto px-4">
         <h2 class="text-3xl font-serif text-center mb-4 text-slate-900">Nuestra Metodología Legal</h2>
