@@ -1,7 +1,7 @@
 name: Actualizar Noticias Jurídicas
 on:
   schedule:
-    - cron: '0 4 * * *' # 05:00 AM hora española
+    - cron: '0 6 * * *' # 07:00 AM hora española
   workflow_dispatch: 
 
 jobs:
