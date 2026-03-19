@@ -16,31 +16,38 @@ CATEGORIAS = {
 
 HISTORICO_FILE = 'historico_noticias.csv'
 JSON_FILE = 'noticias.json'
-LOG_LINKEDIN = 'log_linkedin.txt' # Archivo para recordar la última publicación
+LOG_LINKEDIN = 'log_linkedin.txt'
 
 # --- 1. FUNCIONES DE APOYO Y DATOS ---
 
 def noticia_ya_publicada(url_nueva):
+    """Evita duplicados revisando el historial CSV."""
     if not os.path.exists(HISTORICO_FILE): return False
-    with open(HISTORICO_FILE, mode='r', encoding='utf-8') as f:
-        reader = csv.reader(f)
-        return any(len(fila) > 3 and url_nueva == fila[3] for fila in reader)
+    try:
+        with open(HISTORICO_FILE, mode='r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            return any(len(fila) > 3 and url_nueva == fila[3] for fila in reader)
+    except Exception:
+        return False
 
 def guardar_en_historico(categoria, titulo, url):
+    """Guarda la noticia para que la web y el bot la recuerden."""
     ahora = datetime.now().strftime("%Y-%m-%d %H:%M")
+    file_exists = os.path.isfile(HISTORICO_FILE)
     with open(HISTORICO_FILE, mode='a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow([ahora, categoria, titulo, url])
 
 def obtener_ultimas_del_historico():
+    """Recupera la noticia más reciente de cada categoría para el JSON."""
     ultimas = {}
-    # Inicializamos todas las categorías para que la web siempre tenga los 4 botones funcionales
+    # Inicialización por defecto para evitar campos vacíos en la web
     for cat in CATEGORIAS.keys():
         ultimas[cat] = {
             "titulo": f"Actualidad en {cat.capitalize()}",
-            "resumen": "Estamos seleccionando las noticias más relevantes de las últimas horas. Vuelva a consultar en unos minutos.",
+            "resumen": f"Sincronizando las últimas novedades de {cat.lower()}...",
             "url": "",
-            "fecha": "Sincronizando..."
+            "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
         }
     
     if not os.path.exists(HISTORICO_FILE): return ultimas
@@ -50,70 +57,21 @@ def obtener_ultimas_del_historico():
         for fila in reader:
             if len(fila) >= 4:
                 fecha_str, cat, titulo, url = fila[0], fila[1], fila[2], fila[3]
-                ultimas[cat] = {
-                    "titulo": titulo.split(' - ')[0],
-                    "resumen": f"Últimas novedades legislativas en {cat.capitalize()}.",
-                    "url": url,
-                    "fecha": fecha_str
-                }
+                if cat in ultimas:
+                    ultimas[cat] = {
+                        "titulo": titulo.strip(),
+                        "resumen": f"Últimas novedades legislativas en {cat.capitalize()}.",
+                        "url": url,
+                        "fecha": fecha_str
+                    }
     return ultimas
 
 # --- 2. LÓGICA DE INTELIGENCIA PARA LINKEDIN ---
 
 def obtener_ultima_categoria_linkedin():
-    """Lee qué categoría se publicó la última vez."""
     if os.path.exists(LOG_LINKEDIN):
         with open(LOG_LINKEDIN, 'r') as f:
             return f.read().strip()
     return None
 
-def registrar_publicacion_linkedin(categoria):
-    """Guarda la categoría recién publicada."""
-    with open(LOG_LINKEDIN, 'w') as f:
-        f.write(categoria)
-
-def elegir_noticia_para_linkedin(datos_finales):
-    """Elige una noticia que NO sea de la misma categoría que la anterior."""
-    ultima_cat = obtener_ultima_categoria_linkedin()
-    # Filtramos las categorías disponibles quitando la última publicada
-    candidatas = [cat for cat in datos_finales if cat != ultima_cat and cat != "fecha_sistema"]
-    
-    if not candidatas: # Si solo hay una categoría disponible, la usamos
-        candidatas = [cat for cat in datos_finales if cat != "fecha_sistema"]
-    
-    cat_elegida = random.choice(candidatas)
-    return cat_elegida, datos_finales[cat_elegida]
-
-# --- 3. LÓGICA DE EJECUCIÓN ---
-
-def buscar_nuevas_noticias():
-    for cat, url_rss in CATEGORIAS.items():
-        feed = feedparser.parse(url_rss)
-        for entrada in feed.entries:
-            if not noticia_ya_publicada(entrada.link):
-                titulo_limpio = entrada.title.split(' - ')[0]
-                guardar_en_historico(cat, titulo_limpio, entrada.link)
-                break
-
-def ejecutar_sincronizacion():
-    print("🤖 Sincronizando e iniciando selección para LinkedIn...")
-    buscar_nuevas_noticias()
-    datos_finales = obtener_ultimas_del_historico()
-    
-    if datos_finales:
-        datos_finales["fecha_sistema"] = datetime.now().strftime("%Y-%m-%d %H:%M")
-        with open(JSON_FILE, 'w', encoding='utf-8') as f:
-            json.dump(datos_finales, f, ensure_ascii=False, indent=4)
-        
-        # SELECCIÓN INTELIGENTE PARA LINKEDIN
-        cat, noticia = elegir_noticia_para_linkedin(datos_finales)
-        print(f"🎯 Seleccionada noticia de {cat} para LinkedIn (evitando repetir {obtener_ultima_categoria_linkedin()})")
-        
-        # Aquí llamarías a tu función de publicar_en_linkedin(noticia)
-        # Y si tiene éxito:
-        registrar_publicacion_linkedin(cat)
-        
-        print(f"✅ Proceso completado.")
-
-if __name__ == "__main__":
-    ejecutar_sincronizacion()
+def registrar_publicacion_linkedin(
