@@ -1,7 +1,7 @@
 name: Actualizar Noticias Jurídicas
 on:
   schedule:
-    - cron: '0 6 * * *' # 07:00 AM España
+    - cron: '0 6 * * *'
   workflow_dispatch: 
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
       - name: Instalar dependencias
         run: pip install requests feedparser
           
-      - name: Ejecutar Script de Redacción
+      - name: Ejecutar Script
         run: python "actualizar_noticias.py"
         
       - name: Publicar en LinkedIn
@@ -28,10 +28,9 @@ jobs:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
           LINKEDIN_ID: ${{ secrets.LINKEDIN_ID }}
         run: |
-          # Leemos el texto generado por el script de Python
-          TEXTO=$(cat ultimo_post_linkedin.txt)
+          # Convertimos el texto a JSON seguro para evitar el error ILLEGAL_ARGUMENT
+          TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
           
-          # Enviamos el post a LinkedIn usando tu ID y Token de los Secrets
           curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
           -H "Authorization: Bearer $LINKEDIN_TOKEN" \
           -H "Content-Type: application/json" \
@@ -40,7 +39,7 @@ jobs:
             \"lifecycleState\": \"PUBLISHED\",
             \"specificContent\": {
               \"com.linkedin.ugc.ShareContent\": {
-                \"shareCommentary\": { \"text\": \"$TEXTO\" },
+                \"shareCommentary\": { \"text\": $TEXTO_JSON },
                 \"shareMediaCategory\": \"NONE\"
               }
             },
@@ -53,15 +52,7 @@ jobs:
         run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
-          
-          # Añadimos todos los archivos modificados
-          git add noticias.json historico_noticias.csv log_linkedin.txt ultimo_post_linkedin.txt
-          
-          # Confirmamos los cambios (si existen)
-          git commit -m "v56: Sincronización y Post Profesional" || echo "Sin cambios"
-          
-          # Sincronización agresiva para evitar el error 'rejected - fetch first'
+          git add .
+          git commit -m "v56: Sincronización fija" || echo "Sin cambios"
           git pull origin main --rebase --autostash
-          
-          # Empujamos los cambios definitivos
           git push origin main
