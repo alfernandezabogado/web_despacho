@@ -23,6 +23,13 @@ jobs:
       - name: Ejecutar Script de Redacción
         run: python "actualizar_noticias.py"
   
+      - name: 🔍 Obtener mi ID Real
+        env:
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
+        run: |
+          echo "Consultando ID a LinkedIn..."
+          curl -s -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/me | jq .
+      
       - name: Publicar en LinkedIn
         if: success()
         env:
