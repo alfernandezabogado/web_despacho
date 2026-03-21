@@ -193,21 +193,39 @@
     }
 
     /* --- MEJORAS DE LEGIBILIDAD Y COLOR --- */
-    #news-title {
-        color: #fbbf24 !important; /* Dorado Ámbar */
-        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    }
+#news-title {
+    color: #fbbf24 !important; /* Dorado Ámbar */
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
 
-    #news-body {
-        color: #e2e8f0 !important; /* Gris suave */
-        font-weight: 300;
-        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    }
+#news-body {
+    color: #e2e8f0 !important; /* Gris suave para el texto largo de la noticia */
+    font-weight: 300;
+}
 
-    #news-link {
-        backdrop-filter: none !important; /* Optimiza rendimiento */
-    }
+/* --- CORRECCIÓN ESPECÍFICA MENSAJE INICIAL (Instrucción) --- */
+/* Esto solo afecta al texto cuando NO hay noticia cargada */
+#news-body p:only-child, 
+.instruccion-inicial {
+    color: #f8fafc !important; /* Blanco Nube para máxima claridad */
+    font-size: 1.15rem;
+    letter-spacing: 0.05rem;
+    text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.9), 
+                 0 0 20px rgba(0, 0, 0, 0.5) !important;
+}
 
+/* Estilo para el icono de la mano (Emoji o Icono) */
+#news-body span, #news-body i {
+    display: block;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5)); /* Resplandor ámbar */
+    font-size: 2.8rem;
+    transition: transform 0.3s ease;
+}
+
+#news-link {
+    backdrop-filter: none !important; /* Optimiza rendimiento */
+}
     /* --- ANIMACIÓN DE REVELADO (TRIGGER DESDE JS) --- */
     @keyframes fadeInBlur {
         from { opacity: 0; filter: blur(10px); transform: translateY(10px); }
