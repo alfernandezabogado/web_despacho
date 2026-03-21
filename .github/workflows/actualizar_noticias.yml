@@ -27,9 +27,8 @@ jobs:
         env:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
         run: |
-          # Este comando imprimirá tu información de perfil en los logs
-          curl -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/me
-        
+          # Este endpoint es el estándar de OpenID Connect para obtener tu ID real
+          curl -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/oauth/v2/userinfo        
       - name: Publicar en LinkedIn
         if: success()
         env:
