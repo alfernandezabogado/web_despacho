@@ -23,27 +23,29 @@ jobs:
       - name: Ejecutar Script de Redacción
         run: python "actualizar_noticias.py"
   
-      - name: 🔍 Obtener mi ID Real
-        env:
-          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
-        run: |
-          echo "Consultando ID a LinkedIn..."
-          curl -s -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/me | jq .
-      
       - name: Publicar en LinkedIn
         if: success()
         env:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
-          LINKEDIN_ID: ${{ secrets.LINKEDIN_ID }}
         run: |
+          # 1. Obtener la ID real del perfil vinculado al Token
+          USER_INFO=$(curl -s -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/userinfo)
+          
+          # 2. Extraer el valor 'sub' (que es la ID única de OpenID)
+          MY_ID=$(echo $USER_INFO | jq -r '.sub')
+          
+          echo "Publicando como ID: $MY_ID"
+          
+          # 3. Preparar el texto
           TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
           
-          curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
+          # 4. Publicar usando la ID dinámica
+          curl -s -X POST "https://api.linkedin.com/v2/ugcPosts" \
           -H "Authorization: Bearer $LINKEDIN_TOKEN" \
           -H "Content-Type: application/json" \
           -H "X-Restli-Protocol-Version: 2.0.0" \
           -d "{
-            \"author\": \"urn:li:member:$LINKEDIN_ID\",
+            \"author\": \"urn:li:person:$MY_ID\",
             \"lifecycleState\": \"PUBLISHED\",
             \"specificContent\": {
               \"com.linkedin.ugc.ShareContent\": {
@@ -52,8 +54,7 @@ jobs:
               }
             },
             \"visibility\": { \"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\" }
-          }"
-      - name: Subir cambios
+          }"      - name: Subir cambios
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
