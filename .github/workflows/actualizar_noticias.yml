@@ -34,11 +34,11 @@ jobs:
           USER_INFO=$(curl -s -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/userinfo)
           MY_ID=$(echo $USER_INFO | jq -r '.sub')
 
-          # 2. Leer archivos
+          # 2. Leer archivos generados por Python
           TEXTO=$(cat texto_ready.txt | jq -Rs .)
           URL=$(cat url_ready.txt | tr -d '[:space:]')
 
-          # 3. Post con formato de "Rich Media"
+          # 3. Publicar (Todo en un único comando limpio)
           curl -s -X POST "https://api.linkedin.com/v2/ugcPosts" \
           -H "Authorization: Bearer $LINKEDIN_TOKEN" \
           -H "Content-Type: application/json" \
@@ -55,9 +55,6 @@ jobs:
                   \"originalUrl\": \"$URL\"
                 }]
               }
-            },
-            \"visibility\": { \"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\" }
-          }"
             },
             \"visibility\": { \"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\" }
           }"
