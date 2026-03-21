@@ -23,13 +23,6 @@ jobs:
       - name: Ejecutar Script de Redacción
         run: python "actualizar_noticias.py"
   
-      - name: Diagnóstico de ID Real
-        env:
-          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
-        run: |
-          # Este es el comando que te funcionó en la última captura
-          curl -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/oauth/v2/userinfo
-        
       - name: Publicar en LinkedIn
         if: success()
         env:
@@ -38,14 +31,14 @@ jobs:
         run: |
           TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
           
-          curl -s -X POST "https://api.linkedin.com/v2/ugcPosts" \
+          curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
           -H "Authorization: Bearer $LINKEDIN_TOKEN" \
           -H "Content-Type: application/json" \
           -H "X-Restli-Protocol-Version: 2.0.0" \
           -d "{
-           \"author\": \"urn:li:member:$LINKEDIN_ID\",
+            \"author\": \"urn:li:person:$LINKEDIN_ID\",
             \"lifecycleState\": \"PUBLISHED\",
-             \"specificContent\": {
+            \"specificContent\": {
               \"com.linkedin.ugc.ShareContent\": {
                 \"shareCommentary\": { \"text\": $TEXTO_JSON },
                 \"shareMediaCategory\": \"NONE\"
