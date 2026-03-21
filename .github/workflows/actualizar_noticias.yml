@@ -1,0 +1,60 @@
+name: Actualizar Noticias Juridicas
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # 07:00 AM España
+  workflow_dispatch:    # Esto es lo que crea el botón manual
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Instalar dependencias
+        run: pip install requests feedparser
+          
+      - name: Ejecutar Script de Redacción
+        run: python "actualizar_noticias.py"
+        
+      - name: Publicar en LinkedIn
+        if: success()
+        env:
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
+          LINKEDIN_ID: ${{ secrets.LINKEDIN_ID }}
+        run: |
+          # Convertimos el texto a JSON seguro (evita el error 400)
+          TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
+          
+          curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
+          -H "Authorization: Bearer $LINKEDIN_TOKEN" \
+          -H "Content-Type: application/json" \
+          -H "X-Restli-Protocol-Version: 2.0.0" \
+          -d "{
+            \"author\": \"urn:li:person:${LINKEDIN_ID}\",
+            \"lifecycleState\": \"PUBLISHED\",
+            \"specificContent\": {
+              \"com.linkedin.ugc.ShareContent\": {
+                \"shareCommentary\": { \"text\": $TEXTO_JSON },
+                \"shareMediaCategory\": \"NONE\"
+              }
+            },
+            \"visibility\": { \"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\" }
+          }"
+
+      - name: Subir cambios
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add .
+          git commit -m "Sincronización y Post" || echo "Sin cambios"
+          git pull origin main --rebase --autostash
+          git push origin main
