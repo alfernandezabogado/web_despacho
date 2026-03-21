@@ -28,12 +28,7 @@ jobs:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
           LINKEDIN_ID: ${{ secrets.LINKEDIN_ID }}
         run: |
-          # --- LÍNEA DE DIAGNÓSTICO ---
-          # Esto imprimirá tu ID real en la consola de GitHub Actions
-          echo "Consultando ID real a LinkedIn..."
-          curl -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/me
-          
-          # --- PUBLICACIÓN SEGURA ---
+          # Convertimos el texto a JSON seguro
           TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
           
           curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
