@@ -22,6 +22,13 @@ jobs:
           
       - name: Ejecutar Script de Redacción
         run: python "actualizar_noticias.py"
+  
+      - name: Diagnóstico de ID Real
+        env:
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
+        run: |
+          # Este comando imprimirá tu información de perfil en los logs
+          curl -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/me
         
       - name: Publicar en LinkedIn
         if: success()
