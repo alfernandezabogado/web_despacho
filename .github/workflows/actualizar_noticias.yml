@@ -38,7 +38,7 @@ jobs:
         run: |
           TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
           
-          curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
+          curl -s -X POST "https://api.linkedin.com/v2/ugcPosts" \
           -H "Authorization: Bearer $LINKEDIN_TOKEN" \
           -H "Content-Type: application/json" \
           -H "X-Restli-Protocol-Version: 2.0.0" \
