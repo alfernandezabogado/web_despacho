@@ -28,8 +28,29 @@ jobs:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
           LINKEDIN_ID: ${{ secrets.LINKEDIN_ID }}
         run: |
-          # 1. Convertimos el texto a JSON seguro para evitar el error ILLEGAL_ARGUMENT
+          # --- LÍNEA DE DIAGNÓSTICO ---
+          # Esto imprimirá tu ID real en la consola de GitHub Actions
+          echo "Consultando ID real a LinkedIn..."
+          curl -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/me
+          
+          # --- PUBLICACIÓN SEGURA ---
           TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
+          
+          curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
+          -H "Authorization: Bearer $LINKEDIN_TOKEN" \
+          -H "Content-Type: application/json" \
+          -H "X-Restli-Protocol-Version: 2.0.0" \
+          -d "{
+            \"author\": \"urn:li:person:${LINKEDIN_ID}\",
+            \"lifecycleState\": \"PUBLISHED\",
+            \"specificContent\": {
+              \"com.linkedin.ugc.ShareContent\": {
+                \"shareCommentary\": { \"text\": $TEXTO_JSON },
+                \"shareMediaCategory\": \"NONE\"
+              }
+            },
+            \"visibility\": { \"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\" }
+          }"
       - name: Subir cambios
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
