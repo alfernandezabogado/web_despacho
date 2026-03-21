@@ -22,7 +22,7 @@ jobs:
       - name: Ejecutar Script
         run: python "actualizar_noticias.py"
         
-      - name: Publicar en LinkedIn
+       - name: Publicar en LinkedIn
         if: success()
         env:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
@@ -31,8 +31,7 @@ jobs:
           # 1. Convertimos el texto a JSON seguro para evitar el error ILLEGAL_ARGUMENT
           TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
           
-          # 2. Ejecutamos el curl usando llaves ${} para la variable ID
-          # Esto asegura que el ID del Secret se integre correctamente en la cadena URN
+          # 2. Publicamos asegurando el formato del autor URN y la versión del protocolo
           curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
           -H "Authorization: Bearer $LINKEDIN_TOKEN" \
           -H "Content-Type: application/json" \
