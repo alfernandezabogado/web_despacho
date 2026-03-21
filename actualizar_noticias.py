@@ -37,72 +37,60 @@ def obtener_ultimas_del_historico():
     return ultimas
 
 def redactar_post_profesional(categoria, noticia):
-    # Variantes de ganchos iniciales para evitar penalización de algoritmo
-    ganchos = [
-        "⚖️ NOVEDAD JURÍDICA:",
-        "📢 ACTUALIDAD LEGAL:",
-        "🔍 ANÁLISIS JURISPRUDENCIAL:",
-        "🚀 ÚLTIMA HORA EN DERECHO:"
-    ]
+    # 1. Limpieza de título (evitamos gritos en mayúsculas y nombres de diarios)
+    titulo = noticia['titulo'].split(' - ')[0].split(' | ')[0].strip()
     
-    # Variantes de cuerpo profesional
+    # 2. Variantes de cuerpo para que no parezca un bot
     cuerpos = [
         "Mantenerse al día con la jurisprudencia reciente es clave para ofrecer soluciones legales precisas.",
-        "La interpretación de los tribunales evoluciona constantemente. Analizamos las últimas actualizaciones.",
-        "El conocimiento actualizado del sector marca la diferencia en la estrategia de defensa legal.",
-        "Comparto esta actualización relevante para profesionales y clientes del sector jurídico."
+        "La interpretación de los tribunales evoluciona constantemente. Analizamos esta actualización.",
+        "El conocimiento actualizado del sector marca la diferencia en la estrategia legal.",
+        "Comparto esta novedad relevante para profesionales y clientes del sector jurídico."
     ]
-
-    gancho = random.choice(ganchos)
-    cuerpo = random.choice(cuerpos)
     
-    # Limpieza profunda del título (quita periódicos y separadores)
-    titulo_limpio = noticia['titulo'].split(' - ')[0].split(' | ')[0].strip().upper()
+    cuerpo_elegido = random.choice(cuerpos)
 
-    return (
-        f"{gancho} {categoria.upper()}\n\n"
-        f"📌 {titulo_limpio}\n\n"
-        f"{cuerpo}\n\n"
-        f"🔹 Área: {categoria.capitalize()}\n"
-        f"🔹 Acceso a la noticia completa aquí:\n"
-        f"👇\n{noticia['url']}\n\n"
-        f"#Derecho #Abogacía #{categoria.capitalize()} #ActualidadJuridica #España"
+    # 3. Formateamos el texto (Sin la URL al final para que no ensucie)
+    texto = (
+        f"⚖️ {titulo}\n\n"
+        f"Actualización en Derecho de {categoria.capitalize()}.\n\n"
+        f"{cuerpo_elegido}\n\n"
+        f"¿Qué opináis sobre este criterio? Os leo. 👇\n\n"
+        f"#Derecho #Abogacía #{categoria.capitalize()} #ActualidadJuridica"
     )
+    
+    # Devolvemos el texto y la URL por separado
+    return texto, noticia['url']
 
 def ejecutar_sincronizacion():
-    # 1. Scraping de nuevas noticias
+    # 1. Scraping
     for cat, url_rss in CATEGORIAS.items():
         try:
             feed = feedparser.parse(url_rss)
-            if not feed.entries:
-                continue
-                
             for entrada in feed.entries:
                 if not noticia_ya_publicada(entrada.link):
-                    # Guardamos solo el título limpio en el histórico para el CSV
                     titulo_corto = entrada.title.split(' - ')[0].strip()
                     guardar_en_historico(cat, titulo_corto, entrada.link)
-                    break # Solo una noticia nueva por categoría cada vez
+                    break 
         except Exception as e:
-            print(f"Error procesando {cat}: {e}")
+            print(f"Error en {cat}: {e}")
 
-    # 2. Generar JSON para la web
+    # 2. JSON para web
     datos = obtener_ultimas_del_historico()
     with open(JSON_FILE, 'w', encoding='utf-8') as f:
         json.dump(datos, f, ensure_ascii=False, indent=4)
 
-    # 3. Selección y redacción para LinkedIn
-    # Elegimos una categoría al azar de las que tengan noticias guardadas hoy
+    # 3. Preparación para LinkedIn (Texto + URL en líneas separadas)
     candidatas = [c for c in CATEGORIAS.keys() if c in datos]
     if candidatas:
         cat_elegida = random.choice(candidatas)
-        texto = redactar_post_profesional(cat_elegida, datos[cat_elegida])
+        texto_post, url_noticia = redactar_post_profesional(cat_elegida, datos[cat_elegida])
         
+        # Guardamos el texto y en la ÚLTIMA LÍNEA la URL (importante para el YAML)
         with open(POST_LINKEDIN_FILE, 'w', encoding='utf-8') as f:
-            f.write(texto)
-        print(f"Post redactado con éxito para la categoría: {cat_elegida}")
+            f.write(texto_post + "\n" + url_noticia)
     else:
-        print("No hay noticias nuevas para redactar hoy.")
+        print("Sin noticias nuevas.")
 
 if __name__ == "__main__":
     ejecutar_sincronizacion()
