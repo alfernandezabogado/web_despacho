@@ -43,9 +43,9 @@ jobs:
           -H "Content-Type: application/json" \
           -H "X-Restli-Protocol-Version: 2.0.0" \
           -d "{
-            \"author\": \"urn:li:person:$LINKEDIN_ID\",
+           \"author\": \"urn:li:member:$LINKEDIN_ID\",
             \"lifecycleState\": \"PUBLISHED\",
-            \"specificContent\": {
+             \"specificContent\": {
               \"com.linkedin.ugc.ShareContent\": {
                 \"shareCommentary\": { \"text\": $TEXTO_JSON },
                 \"shareMediaCategory\": \"NONE\"
