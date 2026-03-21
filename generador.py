@@ -1,44 +1,58 @@
 import json
+import os
 from datetime import datetime
 
-def generar_bloque_noticia():
-    print("--- Generador de Noticias JSON v55 ---")
+def actualizar_noticia():
+    archivo_json = 'noticias.json'
     
-    # 1. Selección de área (para asegurar que coincida con tus botones HTML)
+    # 1. Cargar el archivo existente o crear uno base
+    if os.path.exists(archivo_json):
+        with open(archivo_json, 'r', encoding='utf-8') as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                data = {"FAMILIA": {}, "PENAL": {}, "MERCANTIL": {}, "EXTRANJERIA": {}}
+    else:
+        data = {"FAMILIA": {}, "PENAL": {}, "MERCANTIL": {}, "EXTRANJERIA": {}}
+
+    print("\n--- ⚖️ Actualizador Jurídico v55 PRO ---")
+    
+    # 2. Selección de área
     areas_validas = ["FAMILIA", "PENAL", "MERCANTIL", "EXTRANJERIA"]
-    print(f"Áreas disponibles: {', '.join(areas_validas)}")
-    area = input("Introduce el área: ").upper().strip()
+    print(f"Categorías: {', '.join(areas_validas)}")
+    area = input("👉 Elige categoría: ").upper().strip()
     
     if area not in areas_validas:
-        print(f"⚠️ Advertencia: '{area}' no es un área estándar del sitio.")
+        print(f"❌ Error: '{area}' no existe en la web.")
+        return
 
-    # 2. Recolección de datos
-    titulo = input("Título de la noticia: ").strip()
-    resumen = input("Resumen (máx 200 caracteres recomendado): ").strip()
-    url = input("URL de la fuente original: ").strip()
+    # 3. Datos de la noticia
+    titulo = input("📝 Título: ").strip()
+    resumen = input("📄 Resumen corto: ").strip()
+    url = input("🔗 URL de la noticia: ").strip()
     
-    # 3. Fecha automática (Formato español)
+    # 4. Fecha automática (Formato v55)
     meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", 
              "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
     ahora = datetime.now()
     fecha_formateada = f"{ahora.day} de {meses[ahora.month - 1]} de {ahora.year}"
 
-    # 4. Creación del diccionario
-    noticia_dict = {
-        area: {
-            "titulo": titulo,
-            "resumen": resumen,
-            "fecha": fecha_formateada,
-            "url": url
-        }
+    # 5. Inyectar datos
+    data[area] = {
+        "titulo": titulo,
+        "resumen": resumen,
+        "fecha": fecha_formateada,
+        "url": url
     }
-
-    # 5. Salida en formato JSON
-    json_ready = json.dumps(noticia_dict, indent=4, ensure_ascii=False)
     
-    print("\n✅ Bloque generado con éxito. Copia esto en tu noticias.json:\n")
-    print(json_ready)
-    print("\n--------------------------------------")
+    # Actualizar la fecha de última sincronización
+    data["fecha_sistema"] = ahora.strftime("%Y-%m-%d %H:%M")
+
+    # 6. Guardar cambios
+    with open(archivo_json, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+    
+    print(f"\n✅ ¡Éxito! '{archivo_json}' actualizado con la noticia de {area.capitalize()}.")
 
 if __name__ == "__main__":
-    generar_bloque_noticia()
+    actualizar_noticia()
