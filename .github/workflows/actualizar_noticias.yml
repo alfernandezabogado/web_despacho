@@ -36,6 +36,7 @@ jobs:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
           LINKEDIN_ID: ${{ secrets.LINKEDIN_ID }}
         run: |
+          # Preparamos el texto del post de forma segura
           TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
           
           curl -s -X POST "https://api.linkedin.com/v2/ugcPosts" \
