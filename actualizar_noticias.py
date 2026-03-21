@@ -15,7 +15,6 @@ CATEGORIAS = {
 
 HISTORICO_FILE = 'historico_noticias.csv'
 JSON_FILE = 'noticias.json'
-POST_LINKEDIN_FILE = 'ultimo_post_linkedin.txt'
 
 def noticia_ya_publicada(url_nueva):
     if not os.path.exists(HISTORICO_FILE): return False
@@ -37,10 +36,8 @@ def obtener_ultimas_del_historico():
     return ultimas
 
 def redactar_post_profesional(categoria, noticia):
-    # 1. Limpieza de título (evitamos gritos en mayúsculas y nombres de diarios)
     titulo = noticia['titulo'].split(' - ')[0].split(' | ')[0].strip()
     
-    # 2. Variantes de cuerpo para que no parezca un bot
     cuerpos = [
         "Mantenerse al día con la jurisprudencia reciente es clave para ofrecer soluciones legales precisas.",
         "La interpretación de los tribunales evoluciona constantemente. Analizamos esta actualización.",
@@ -50,7 +47,6 @@ def redactar_post_profesional(categoria, noticia):
     
     cuerpo_elegido = random.choice(cuerpos)
 
-    # 3. Formateamos el texto (Sin la URL al final para que no ensucie)
     texto = (
         f"⚖️ {titulo}\n\n"
         f"Actualización en Derecho de {categoria.capitalize()}.\n\n"
@@ -59,11 +55,10 @@ def redactar_post_profesional(categoria, noticia):
         f"#Derecho #Abogacía #{categoria.capitalize()} #ActualidadJuridica"
     )
     
-    # Devolvemos el texto y la URL por separado
     return texto, noticia['url']
 
 def ejecutar_sincronizacion():
-    # 1. Scraping
+    # 1. Scraping de noticias
     for cat, url_rss in CATEGORIAS.items():
         try:
             feed = feedparser.parse(url_rss)
@@ -75,22 +70,25 @@ def ejecutar_sincronizacion():
         except Exception as e:
             print(f"Error en {cat}: {e}")
 
-    # 2. JSON para web
+    # 2. Generar JSON para web
     datos = obtener_ultimas_del_historico()
     with open(JSON_FILE, 'w', encoding='utf-8') as f:
         json.dump(datos, f, ensure_ascii=False, indent=4)
 
-    # 3. Preparación para LinkedIn (Texto + URL en líneas separadas)
+    # 3. Selección para LinkedIn
     candidatas = [c for c in CATEGORIAS.keys() if c in datos]
     if candidatas:
         cat_elegida = random.choice(candidatas)
         texto_post, url_noticia = redactar_post_profesional(cat_elegida, datos[cat_elegida])
         
-        # Guardamos el texto y en la ÚLTIMA LÍNEA la URL (importante para el YAML)
-        with open(POST_LINKEDIN_FILE, 'w', encoding='utf-8') as f:
-            f.write(texto_post + "\n" + url_noticia)
+        # Guardamos en archivos SEPARADOS para que el YAML lea perfecto
+        with open("texto_ready.txt", 'w', encoding='utf-8') as f:
+            f.write(texto_post)
+        with open("url_ready.txt", 'w', encoding='utf-8') as f:
+            f.write(url_noticia)
+        print(f"Post preparado para {cat_elegida}")
     else:
-        print("Sin noticias nuevas.")
+        print("No hay noticias nuevas hoy.")
 
 if __name__ == "__main__":
     ejecutar_sincronizacion()
