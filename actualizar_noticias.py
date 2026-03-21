@@ -133,15 +133,16 @@ def ejecutar_sincronizacion():
     
     with open(JSON_FILE, 'w', encoding='utf-8') as f:
         json.dump(datos_finales, f, ensure_ascii=False, indent=4)
-    
+
+    # ... (Dentro de tu función ejecutar_sincronizacion)
+    # 3. SELECCIÓN Y REDACCIÓN LINKEDIN
     cat_link, noticia_link = elegir_noticia_para_linkedin(datos_finales)
     if cat_link:
-        print(f"🎯 Noticia seleccionada para LinkedIn: {cat_link}")
-        # REDACTAR EL POST CON EL NUEVO FORMATO
         texto_para_linkedin = redactar_post_profesional(cat_link, noticia_link)
-        registrar_publicacion_linkedin(cat_link, texto_para_linkedin)
-        print("📝 Post redactado y listo para envío.")
-        
+        with open(POST_LINKEDIN_FILE, 'w', encoding='utf-8') as f:
+            f.write(texto_para_linkedin)
+        print(f"✅ Post redactado y guardado para LinkedIn")
+     
     print("✅ Proceso completado con éxito.")
 
 if __name__ == "__main__":
