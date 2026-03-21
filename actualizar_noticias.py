@@ -6,13 +6,19 @@ import csv
 import random
 from datetime import datetime
 
-# --- CONFIGURACIÓN OPTIMIZADA ---
+# --- CONFIGURACIÓN OPTIMIZADA (Filtro Anti-Opinión y Política) ---
 CATEGORIAS = {
-    # Ampliamos a 48h y añadimos keywords para evitar que FAMILIA quede vacía
+    # Familia: 48h para asegurar contenido + términos específicos
     "FAMILIA": "https://news.google.com/rss/search?q=sentencia+OR+reforma+derecho+familia+España+OR+custodia+compartida+when:48h&hl=es&gl=ES&ceid=ES:es",
-    "PENAL": "https://news.google.com/rss/search?q=derecho+penal+España+actualidad+when:24h&hl=es&gl=ES&ceid=ES:es",
-    "MERCANTIL": "https://news.google.com/rss/search?q=concurso+acreedores+España+noticias+when:24h&hl=es&gl=ES&ceid=ES:es",
-    "EXTRANJERIA": "https://news.google.com/rss/search?q=reforma+reglamento+extranjería+España+when:24h&hl=es&gl=ES&ceid=ES:es"
+    
+    # Penal: 24h + exclusión de opinión y política para evitar artículos irrelevantes
+    "PENAL": "https://news.google.com/rss/search?q=sentencia+OR+tribunal+derecho+penal+España+-opinión+-tribuna+-política+when:24h&hl=es&gl=ES&ceid=ES:es",
+    
+    # Mercantil: 24h centrado en actualidad concursal y empresas
+    "MERCANTIL": "https://news.google.com/rss/search?q=concurso+acreedores+España+noticias+mercantil+when:24h&hl=es&gl=ES&ceid=ES:es",
+    
+    # Extranjería: 24h centrado en reformas y BOE
+    "EXTRANJERIA": "https://news.google.com/rss/search?q=reforma+reglamento+extranjería+España+OR+BOE+when:24h&hl=es&gl=ES&ceid=ES:es"
 }
 
 HISTORICO_FILE = 'historico_noticias.csv'
