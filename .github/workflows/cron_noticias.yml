@@ -26,7 +26,7 @@ jobs:
         env:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
         # Asegúrate de que el nombre del archivo coincida exactamente
-        run: python "actualizar_noticias (4).py"
+        run: python "actualizar_noticias.py"
         
       - name: Subir cambios
         env:
