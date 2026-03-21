@@ -1,58 +1,58 @@
 import json
 import os
+import subprocess
 from datetime import datetime
+
+def ejecutar_git():
+    """Automatiza la subida a GitHub"""
+    try:
+        print("\n🚀 Subiendo cambios a GitHub...")
+        subprocess.run(["git", "add", "noticias.json"], check=True)
+        subprocess.run(["git", "commit", "-m", f"Actualización noticias {datetime.now().strftime('%d/%m/%Y')}"], check=True)
+        subprocess.run(["git", "push"], check=True)
+        print("\n✅ ¡WEB ACTUALIZADA EN VIVO!")
+    except Exception as e:
+        print(f"\n❌ Error al subir a GitHub: {e}")
+        print("Asegúrate de tener Git instalado y haber hecho login.")
 
 def actualizar_noticia():
     archivo_json = 'noticias.json'
     
-    # 1. Cargar el archivo existente o crear uno base
+    # Cargar datos existentes
     if os.path.exists(archivo_json):
         with open(archivo_json, 'r', encoding='utf-8') as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = {"FAMILIA": {}, "PENAL": {}, "MERCANTIL": {}, "EXTRANJERIA": {}}
+            try: data = json.load(f)
+            except: data = {"FAMILIA":{}, "PENAL":{}, "MERCANTIL":{}, "EXTRANJERIA":{}}
     else:
-        data = {"FAMILIA": {}, "PENAL": {}, "MERCANTIL": {}, "EXTRANJERIA": {}}
+        data = {"FAMILIA":{}, "PENAL":{}, "MERCANTIL":{}, "EXTRANJERIA":{}}
 
-    print("\n--- ⚖️ Actualizador Jurídico v55 PRO ---")
+    print("\n--- ⚖️ PANEL DE CONTROL JURÍDICO v55 ---")
+    area = input("👉 Categoría (FAMILIA, PENAL, MERCANTIL, EXTRANJERIA): ").upper().strip()
     
-    # 2. Selección de área
-    areas_validas = ["FAMILIA", "PENAL", "MERCANTIL", "EXTRANJERIA"]
-    print(f"Categorías: {', '.join(areas_validas)}")
-    area = input("👉 Elige categoría: ").upper().strip()
-    
-    if area not in areas_validas:
-        print(f"❌ Error: '{area}' no existe en la web.")
+    if area not in ["FAMILIA", "PENAL", "MERCANTIL", "EXTRANJERIA"]:
+        print("❌ Categoría no válida.")
         return
 
-    # 3. Datos de la noticia
     titulo = input("📝 Título: ").strip()
-    resumen = input("📄 Resumen corto: ").strip()
-    url = input("🔗 URL de la noticia: ").strip()
+    resumen = input("📄 Resumen: ").strip()
+    url = input("🔗 URL: ").strip()
     
-    # 4. Fecha automática (Formato v55)
-    meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", 
-             "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+    # Fecha automática
     ahora = datetime.now()
-    fecha_formateada = f"{ahora.day} de {meses[ahora.month - 1]} de {ahora.year}"
+    meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+    fecha_esp = f"{ahora.day} de {meses[ahora.month - 1]} de {ahora.year}"
 
-    # 5. Inyectar datos
-    data[area] = {
-        "titulo": titulo,
-        "resumen": resumen,
-        "fecha": fecha_formateada,
-        "url": url
-    }
-    
-    # Actualizar la fecha de última sincronización
+    data[area] = {"titulo": titulo, "resumen": resumen, "fecha": fecha_esp, "url": url}
     data["fecha_sistema"] = ahora.strftime("%Y-%m-%d %H:%M")
 
-    # 6. Guardar cambios
+    # Guardar localmente
     with open(archivo_json, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
     
-    print(f"\n✅ ¡Éxito! '{archivo_json}' actualizado con la noticia de {area.capitalize()}.")
+    print(f"✅ Archivo guardado localmente.")
+    
+    # Lanzar subida automática
+    ejecutar_git()
 
 if __name__ == "__main__":
     actualizar_noticia()
