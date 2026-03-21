@@ -2,8 +2,8 @@ name: Actualizar Noticias Juridicas
 
 on:
   schedule:
-    - cron: '0 8 * * *' # Se ejecuta a las 08:00 UTC
-  workflow_dispatch: # Permite ejecución manual
+    - cron: '0 8 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,7 +20,7 @@ jobs:
 
       - name: Instalar dependencias
         run: |
-          pip install pandas requests beautifulsoup4
+          pip install pandas requests beautifulsoup4 feedparser
 
       - name: Ejecutar Script de Redacción
         run: python "actualizar_noticias.py"
@@ -30,19 +30,19 @@ jobs:
         env:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
         run: |
-          # 1. Obtener ID real del token (esto evita el 403 por ID incorrecta)
+          # 1. Obtenemos quién es el dueño del token (ID Real)
           USER_INFO=$(curl -s -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/userinfo)
           MY_ID=$(echo $USER_INFO | jq -r '.sub')
           
-          if [ "$MY_ID" == "null" ]; then
-            echo "Error: No se pudo obtener la ID. Verifica que el token tenga permisos openid y profile."
+          if [ "$MY_ID" == "null" ] || [ -z "$MY_ID" ]; then
+            echo "Error de permisos: Revisa que el token tenga scopes openid y profile."
             exit 1
           fi
 
-          # 2. Preparar el texto de forma segura para JSON
+          # 2. Preparamos el texto del post
           TEXTO_JSON=$(cat ultimo_post_linkedin.txt | jq -aRs .)
           
-          # 3. Publicar (usando el formato 'person' que es el estándar de OpenID)
+          # 3. Publicamos usando la ID dinámica (formato person)
           curl -s -X POST "https://api.linkedin.com/v2/ugcPosts" \
           -H "Authorization: Bearer $LINKEDIN_TOKEN" \
           -H "Content-Type: application/json" \
