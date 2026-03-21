@@ -1,14 +1,14 @@
 name: Actualizar Noticias Jurídicas
 on:
   schedule:
-    - cron: '0 6 * * *' # 07:00 AM hora española
+    - cron: '0 6 * * *' # 07:00 AM España
   workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del repositorio
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Configurar Python
@@ -17,30 +17,24 @@ jobs:
           python-version: '3.11'
           
       - name: Instalar dependencias
-        run: |
-          python -m pip install --upgrade pip
-          # Añadimos feedparser y requests para que el bot no falle
-          pip install requests beautifulsoup4 lxml feedparser
+        run: pip install requests feedparser
           
       - name: Ejecutar Script
-        env:
-          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
-        # Asegúrate de que el nombre del archivo coincida exactamente
         run: python "actualizar_noticias.py"
         
-      - name: Subir cambios
+      - name: Publicar en LinkedIn
+        if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
+        run: |
+          TEXTO=$(cat ultimo_post_linkedin.txt)
+          # Aquí iría el comando 'curl' que usa tu Person ID para publicar el comentario
+          # Es vital que el Person ID sea el tuyo personal.
+
+      - name: Subir cambios
         run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
-          
-          # 1. Añadimos los archivos que el bot actualiza
-          git add noticias.json historico_noticias.csv log_linkedin.txt
-          
-          # 2. Confirmamos los cambios
-          git commit -m "Sincronización automática: Familia y LinkedIn restaurados" || echo "Sin cambios"
-          
-          # 3. Sincronizamos con el servidor para evitar errores de escritura
-          git pull origin main --rebase
-          git push origin main
+          git add .
+          git commit -m "v56: Sincronización y Post Profesional" || echo "Sin cambios"
+          git push
