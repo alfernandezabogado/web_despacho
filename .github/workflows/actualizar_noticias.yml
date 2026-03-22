@@ -11,20 +11,20 @@ jobs:
 
     steps:
       - name: Checkout del código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Configurar Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.9'
 
       - name: Instalar dependencias
         run: |
-          pip install pandas requests beautifulsoup4 feedparser
+          pip install feedparser requests  # <-- ESTO ES LO QUE FALTABA
 
-      - name: Ejecutar Script de Redacción
-        run: python "actualizar_noticias.py"
-
+      - name: Ejecutar Bot
+        run: python actualizar_noticias.py
+        
       - name: Publicar en LinkedIn
         if: success()
         env:
