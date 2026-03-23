@@ -58,3 +58,10 @@ jobs:
             },
             \"visibility\": { \"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\" }
           }"
+      - name: Configurar Git y Guardar Cambios
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add noticias.json historico_noticias.csv
+          git commit -m "Update noticias e historico [skip ci]" || echo "No hay cambios que commitear"
+          git push
