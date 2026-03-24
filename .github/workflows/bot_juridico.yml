@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      
+
     steps:
-      - name: Descargar codigo
+      - name: Checkout del código
         uses: actions/checkout@v3
 
       - name: Configurar Python
@@ -22,19 +22,53 @@ jobs:
 
       - name: Instalar dependencias
         run: |
-          python -m pip install --upgrade pip
-          pip install requests beautifulsoup4
+          pip install feedparser requests
 
-      - name: Ejecutar Bot
+      - name: Ejecutar Script de Redacción
         env:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: python actualizar_noticias.py
 
-      - name: Guardar cambios en el repositorio
+      - name: Publicar en LinkedIn
+        if: success()
+        env:
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
         run: |
-          git config --global user.name "GitHub Action Bot"
-          git config --global user.email "actions@github.com"
-          git add noticias.json || echo "noticias.json no encontrado"
-          git add historico_noticias.csv || echo "historico_noticias.csv no encontrado"
-          git commit -m "Bot: Actualización diaria [$(date)]" || echo "No hay cambios para subir"
+          # 1. Obtener ID del perfil
+          USER_INFO=$(curl -s -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/userinfo)
+          MY_ID=$(echo $USER_INFO | jq -r '.sub')
+
+          # 2. Leer archivos generados por Python
+          # Usamos jq para procesar el texto y que no rompa el JSON del curl
+          TEXTO=$(cat texto_ready.txt | jq -Rs .)
+          URL=$(cat url_ready.txt | tr -d '[:space:]')
+
+          # 3. Publicar con tarjeta visual grande (ARTICLE)
+          curl -s -X POST "https://api.linkedin.com/v2/ugcPosts" \
+          -H "Authorization: Bearer $LINKEDIN_TOKEN" \
+          -H "Content-Type: application/json" \
+          -H "X-Restli-Protocol-Version: 2.0.0" \
+          -d "{
+            \"author\": \"urn:li:person:$MY_ID\",
+            \"lifecycleState\": \"PUBLISHED\",
+            \"specificContent\": {
+              \"com.linkedin.ugc.ShareContent\": {
+                \"shareCommentary\": { \"text\": $TEXTO },
+                \"shareMediaCategory\": \"ARTICLE\",
+                \"media\": [{
+                  \"status\": \"READY\",
+                  \"originalUrl\": \"$URL\"
+                }]
+              }
+            },
+            \"visibility\": { \"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\" }
+          }"
+
+      - name: Guardar cambios en el repositorio
+        if: always()
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add noticias.json historico_noticias.csv
+          git commit -m "Bot: Actualización diaria $(date +'%Y-%m-%d')" || echo "No hay cambios para subir"
           git push
