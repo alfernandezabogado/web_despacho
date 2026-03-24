@@ -2,7 +2,6 @@ import json
 import os
 import sys
 
-# Archivos de intercambio con el YAML
 JSON_FILE = 'noticias.json'
 TEXTO_FILE = 'texto_ready.txt'
 URL_FILE = 'url_ready.txt'
@@ -21,14 +20,15 @@ def preparar_manual(categoria_elegida):
         return
 
     noticia = datos[cat_upper]
+    # Limpiamos el título para que no salgan nombres de periódicos
     titulo = noticia['titulo'].split(' - ')[0].split(' | ')[0].strip()
     
-    # Redacción fija pero profesional para envío manual
+    # Redacción profesional sin la URL pegada (la URL irá en la tarjeta)
     texto = (
         f"⚖️ {titulo}\n\n"
-        f"Actualización relevante en materia de Derecho {categoria_elegida.capitalize()}.\n\n"
-        f"Comparto esta información por su especial interés para el sector jurídico y profesional.\n\n"
-        f"¿Qué os parece esta novedad? 👇\n\n"
+        f"Actualización de especial interés en Derecho {categoria_elegida.capitalize()}.\n\n"
+        f"Analizamos los puntos clave de esta novedad jurisprudencial y su impacto.\n\n"
+        f"¿Qué opináis sobre este criterio? 👇\n\n"
         f"#Derecho #Abogacía #{categoria_elegida.capitalize()} #ActualidadJuridica"
     )
 
@@ -37,9 +37,8 @@ def preparar_manual(categoria_elegida):
     with open(URL_FILE, 'w', encoding='utf-8') as f:
         f.write(noticia['url'])
     
-    print(f"✅ Preparada noticia de {cat_upper} para publicar.")
+    print(f"✅ Preparada noticia de {cat_upper}: {titulo}")
 
 if __name__ == "__main__":
-    # Recibe la categoría como argumento desde GitHub Actions
     if len(sys.argv) > 1:
         preparar_manual(sys.argv[1])
