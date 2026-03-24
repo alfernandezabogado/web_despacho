@@ -6,7 +6,7 @@ on:
       categoria:
         description: 'Elige la categoría a publicar'
         required: true
-        default: 'FAMILIA'
+        default: 'MERCANTIL'
         type: choice
         options:
         - FAMILIA
@@ -29,15 +29,18 @@ jobs:
       - name: Preparar Noticia
         run: python publicar_manual.py ${{ github.event.inputs.categoria }}
 
-      - name: Publicar en LinkedIn
+      - name: Publicar en LinkedIn (Caja Grande)
         env:
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
         run: |
           USER_INFO=$(curl -s -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/userinfo)
           MY_ID=$(echo $USER_INFO | jq -r '.sub')
+          
+          # Leemos el texto y la URL preparados
           TEXTO=$(cat texto_ready.txt | jq -Rs .)
           URL=$(cat url_ready.txt | tr -d '[:space:]')
 
+          # Publicación como ARTICLE para máxima visibilidad
           curl -s -X POST "https://api.linkedin.com/v2/ugcPosts" \
           -H "Authorization: Bearer $LINKEDIN_TOKEN" \
           -H "Content-Type: application/json" \
