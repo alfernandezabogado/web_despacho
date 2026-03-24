@@ -1,0 +1,59 @@
+name: "PLAN B: Publicar Noticia Manual"
+
+on:
+  workflow_dispatch:
+    inputs:
+      categoria:
+        description: 'Elige la categoría a publicar'
+        required: true
+        default: 'FAMILIA'
+        type: choice
+        options:
+        - FAMILIA
+        - PENAL
+        - MERCANTIL
+        - EXTRANJERIA
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Preparar Noticia
+        run: python publicar_manual.py ${{ github.event.inputs.categoria }}
+
+      - name: Publicar en LinkedIn
+        env:
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
+        run: |
+          USER_INFO=$(curl -s -H "Authorization: Bearer $LINKEDIN_TOKEN" https://api.linkedin.com/v2/userinfo)
+          MY_ID=$(echo $USER_INFO | jq -r '.sub')
+          TEXTO=$(cat texto_ready.txt | jq -Rs .)
+          URL=$(cat url_ready.txt | tr -d '[:space:]')
+
+          curl -s -X POST "https://api.linkedin.com/v2/ugcPosts" \
+          -H "Authorization: Bearer $LINKEDIN_TOKEN" \
+          -H "Content-Type: application/json" \
+          -H "X-Restli-Protocol-Version: 2.0.0" \
+          -d "{
+            \"author\": \"urn:li:person:$MY_ID\",
+            \"lifecycleState\": \"PUBLISHED\",
+            \"specificContent\": {
+              \"com.linkedin.ugc.ShareContent\": {
+                \"shareCommentary\": { \"text\": $TEXTO },
+                \"shareMediaCategory\": \"ARTICLE\",
+                \"media\": [{
+                  \"status\": \"READY\",
+                  \"originalUrl\": \"$URL\"
+                }]
+              }
+            },
+            \"visibility\": { \"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\" }
+          }"
