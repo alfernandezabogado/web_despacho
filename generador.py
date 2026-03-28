@@ -1,58 +1,52 @@
 import json
 import os
-import subprocess
+import feedparser # Necesitarás instalar esta librería: pip install feedparser
 from datetime import datetime
 
-def ejecutar_git():
-    """Automatiza la subida a GitHub"""
-    try:
-        print("\n🚀 Subiendo cambios a GitHub...")
-        subprocess.run(["git", "add", "noticias.json"], check=True)
-        subprocess.run(["git", "commit", "-m", f"Actualización noticias {datetime.now().strftime('%d/%m/%Y')}"], check=True)
-        subprocess.run(["git", "push"], check=True)
-        print("\n✅ ¡WEB ACTUALIZADA EN VIVO!")
-    except Exception as e:
-        print(f"\n❌ Error al subir a GitHub: {e}")
-        print("Asegúrate de tener Git instalado y haber hecho login.")
+def limpiar_titulo(titulo):
+    # Quita el nombre del periódico al final (ej: " - El País")
+    return titulo.split(' - ')[0].split(' | ')[0].strip()
 
-def actualizar_noticia():
+def obtener_noticias_automaticas():
+    # URLs configuradas solo para ESPAÑA
+    busquedas = {
+        "PENAL": "https://news.google.com/rss/search?q=derecho+penal+España+when:24h&hl=es&gl=ES&ceid=ES:es",
+        "MERCANTIL": "https://news.google.com/rss/search?q=derecho+mercantil+España+when:24h&hl=es&gl=ES&ceid=ES:es",
+        "FAMILIA": "https://news.google.com/rss/search?q=derecho+familia+España+when:24h&hl=es&gl=ES&ceid=ES:es",
+        "EXTRANJERIA": "https://news.google.com/rss/search?q=extranjería+España+when:24h&hl=es&gl=ES&ceid=ES:es"
+    }
+
     archivo_json = 'noticias.json'
-    
-    # Cargar datos existentes
-    if os.path.exists(archivo_json):
-        with open(archivo_json, 'r', encoding='utf-8') as f:
-            try: data = json.load(f)
-            except: data = {"FAMILIA":{}, "PENAL":{}, "MERCANTIL":{}, "EXTRANJERIA":{}}
-    else:
-        data = {"FAMILIA":{}, "PENAL":{}, "MERCANTIL":{}, "EXTRANJERIA":{}}
+    data = {}
 
-    print("\n--- ⚖️ PANEL DE CONTROL JURÍDICO v55 ---")
-    area = input("👉 Categoría (FAMILIA, PENAL, MERCANTIL, EXTRANJERIA): ").upper().strip()
-    
-    if area not in ["FAMILIA", "PENAL", "MERCANTIL", "EXTRANJERIA"]:
-        print("❌ Categoría no válida.")
-        return
+    print("--- ⚖️ ACTUALIZADOR AUTOMÁTICO DE NOTICIAS (ESPAÑA) ---")
 
-    titulo = input("📝 Título: ").strip()
-    resumen = input("📄 Resumen: ").strip()
-    url = input("🔗 URL: ").strip()
-    
-    # Fecha automática
-    ahora = datetime.now()
-    meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
-    fecha_esp = f"{ahora.day} de {meses[ahora.month - 1]} de {ahora.year}"
+    for categoria, url in busquedas.items():
+        print(f"Buscando {categoria}...")
+        feed = feedparser.parse(url)
+        
+        if feed.entries:
+            # Tomamos la primera noticia que devuelva Google
+            primera = feed.entries[0]
+            
+            # Filtro de seguridad por si se cuelan dominios extranjeros (.cl, .ar, etc)
+            if any(dom in primera.link for dom in [".cl/", ".ar/", ".mx/", ".co/"]):
+                print(f"⚠️ Noticia extranjera descartada en {categoria}. Saltando...")
+                continue
 
-    data[area] = {"titulo": titulo, "resumen": resumen, "fecha": fecha_esp, "url": url}
-    data["fecha_sistema"] = ahora.strftime("%Y-%m-%d %H:%M")
+            data[categoria] = {
+                "titulo": limpiar_titulo(primera.title),
+                "url": primera.link,
+                "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
+            }
+        else:
+            print(f"❌ No se han encontrado noticias hoy para {categoria}")
 
-    # Guardar localmente
+    # Guardar en el JSON
     with open(archivo_json, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
+        json.dump(data, f, ensure_ascii=False, indent=4)
     
-    print(f"✅ Archivo guardado localmente.")
-    
-    # Lanzar subida automática
-    ejecutar_git()
+    print("\n✅ noticias.json actualizado con éxito.")
 
 if __name__ == "__main__":
-    actualizar_noticia()
+    obtener_noticias_automaticas()
